@@ -1,160 +1,189 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
-const FILMS = [
-  { year: '2021', title: 'Maato Manche', role: 'Director' },
-  { year: '2022', title: 'Paral', role: 'Writer / Director' },
-  { year: '2023', title: 'Antim Yatra', role: 'Director' },
-  { year: '2024', title: 'Bhrikuti', role: 'Director / Producer' },
-];
+const Hero = ({
+  videoSrc  = '',
+  posterSrc = '',
+  canPlay   = false,
+}) => {
+  const videoRef                    = useRef(null);
+  const [videoReady, setVideoReady] = useState(false);
+  const [hasError,   setHasError]   = useState(false);
 
-const QUOTE = '"Cinema is not a mirror. It is a hammer."';
-
-const Hero = () => {
-  const [isLoaded, setIsLoaded] = useState(false);
-  const pathRef = useRef(null);
-  const glowRef = useRef(null);
-
+  /* ── Play only after loader signals canPlay ── */
   useEffect(() => {
-    const t = setTimeout(() => setIsLoaded(true), 100);
-    return () => clearTimeout(t);
-  }, []);
+    const vid = videoRef.current;
+    if (!vid || !canPlay || !videoSrc) return;
 
-  // Jagged line animation
-  useEffect(() => {
-    if (!pathRef.current) return;
-    const len = pathRef.current.getTotalLength();
-    const styleId = 'jagged-line-anim';
-    if (!document.getElementById(styleId)) {
-      const style = document.createElement('style');
-      style.id = styleId;
-      style.textContent = `
-        @keyframes jaggedFlow {
-          0%   { stroke-dashoffset: ${len}; }
-          100% { stroke-dashoffset: ${-len}; }
+    const tryPlay = () => {
+      vid.play().catch((err) => {
+        if (process.env.NODE_ENV === 'development') {
+          console.debug('[Hero] video.play() rejected:', err.message);
         }
-        @keyframes filmRow {
-          from { opacity: 0; transform: translateX(18px); }
-          to   { opacity: 1; transform: translateX(0); }
-        }
-        .jagged-animated {
-          stroke-dasharray: ${len * 0.45} ${len * 0.55};
-          animation: jaggedFlow 6s linear infinite;
-        }
-        .jagged-glow {
-          stroke-dasharray: ${len * 0.45} ${len * 0.55};
-          animation: jaggedFlow 6s linear infinite;
-        }
-        .film-row-enter {
-          opacity: 0;
-          animation: filmRow 0.5s ease forwards;
-        }
-      `;
-      document.head.appendChild(style);
+      });
+    };
+
+    if (vid.readyState >= 1) {
+      tryPlay();
+    } else {
+      vid.addEventListener('loadedmetadata', tryPlay, { once: true });
+      return () => vid.removeEventListener('loadedmetadata', tryPlay);
     }
-    pathRef.current.classList.add('jagged-animated');
-    if (glowRef.current) glowRef.current.classList.add('jagged-glow');
-  }, []);
+  }, [canPlay, videoSrc]);
 
   return (
     <>
-      <section
-        className="relative w-full h-screen overflow-hidden bg-transparent"
-      >
-{/* ── LEFT: Name block ── */}
-<div className="absolute inset-0 z-20 flex flex-col justify-center pointer-events-none mt-12 md:mt-0">
-  <div className="pointer-events-auto pl-4 sm:pl-10 lg:pl-28">
+      <style>{`
+        .hero-section *,
+        .hero-section *::before,
+        .hero-section *::after {
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+        }
 
-    {/* Name */}
-    <h1
-      className="leading-[0.83] flex flex-col font-black uppercase mb-3 md:mb-5 w-fit"
-style={{
-  fontFamily: '"Outfit", sans-serif',
-  fontSize: 'clamp(2.5rem,8vw,9.5rem)',
-}}
-    >
-      {/* AMAN PRATAP — added mb-2 md:mb-4 for gap */}
-      <div className="flex flex-wrap md:flex-nowrap gap-x-[0.2em] gap-y-[0.1em] drop-shadow-xl mb-2 md:mb-4">
-        <span
-          className={`animate__animated ${isLoaded ? 'animate__bounceInLeft' : 'opacity-0'} block`}
-          style={{ color: 'var(--color-text,var(--color-primary))', animationDelay: '0.3s' }}
-          data-cursor="large"
-        >
-          Aman
-        </span>
-        <span
-          className={`animate__animated ${isLoaded ? 'animate__bounceInRight' : 'opacity-0'} block`}
-          style={{ color: 'var(--color-text,var(--color-primary))', animationDelay: '0.5s' }}
-          data-cursor="large"
-        >
-          Pratap
-        </span>
-      </div>
+        /* ══════════════════════════════════════════════════════════════
+         * DESKTOP / LANDSCAPE  — classic full-viewport cover
+         * ══════════════════════════════════════════════════════════════ */
+        .hero-section {
+          position: relative;
+          width: 100%;
+          height: 100vh;
+          height: 100dvh;           /* dynamic viewport — hides no pixels */
+          min-height: 480px;
+          overflow: hidden;
+          background: #4f4532;
+          isolation: isolate;
+        }
 
-<div style={{ opacity: 0.72 }}>
-  <span
-    className={`animate__animated ${
-      isLoaded ? 'animate__bounceInUp' : 'opacity-0'
-    } block`}
-    style={{
-      color: 'transparent',
-      WebkitTextStroke: '2px var(--color-primary)',
-      letterSpacing: '0.04em',
-      animationDelay: '0.7s',
-    }}
-    data-cursor="large"
-  >
-    Adhikary
-  </span>
-</div>
-    </h1>
+        .hero-video {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          /*
+           * Anchor to top-center so the subject's face is
+           * always visible even when the frame is cropped vertically.
+           */
+          object-position: center top;
+          opacity: 0;
+          will-change: opacity;
+          transition: opacity 1.2s ease;
+          pointer-events: none;
+          backface-visibility: hidden;
+          -webkit-backface-visibility: hidden;
+        }
+        .hero-video.ready { opacity: 1; }
 
-    {/* Arrow + subtitle */}
-    <div
-      className={`flex items-center gap-2 md:gap-4 mt-6 md:mt-8 animate__animated ${isLoaded ? 'animate__fadeInUp' : 'opacity-0'}`}
-      style={{ animationDelay: '0.9s' }}
-    >
-      <svg width="24" height="8" viewBox="0 0 40 12" fill="none" xmlns="http://www.w3.org/2000/svg"
-        className="animate-pulse shrink-0 md:w-9 md:h-3">
-        <path d="M0 6H38M38 6L33 1M38 6L33 11"
-          stroke="var(--color-accent,var(--color-accent))" strokeWidth="2"
-          strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-      <h2
-        className="text-[0.65rem] sm:text-xs md:text-base uppercase font-semibold tracking-[0.15em] sm:tracking-[0.25em] md:tracking-[0.35em]"
-        style={{ color: 'var(--color-accent,var(--color-accent))', fontFamily: '"League Spartan", sans-serif' }}
-      >
-        Nepali Film Director
-      </h2>
-    </div>
+        /* ══════════════════════════════════════════════════════════════
+         * PORTRAIT MOBILE — THE CORE FIX
+         *
+         * Problem: on a phone in portrait the video is typically 9:16.
+         * Locking the section to 100dvh + object-fit:cover clips big
+         * chunks off the top and bottom — exactly what you see.
+         *
+         * Fix strategy:
+         *   1. Let the section HEIGHT be driven by the video's content.
+         *   2. Switch the video out of position:absolute (fills parent)
+         *      into normal document flow (position:relative / static).
+         *   3. width:100% + height:auto → browser preserves the video's
+         *      native aspect ratio → ZERO cropping ever.
+         *   4. min-height:100dvh on the section ensures it still covers
+         *      the screen even for short/landscape source video.
+         * ══════════════════════════════════════════════════════════════ */
+        @media (orientation: portrait) and (max-width: 768px) {
 
-    {/* Gold rule */}
-    <div
-      className={`h-px mt-4 md:mt-6 mb-6 transition-all duration-1000 ease-out delay-700 ${isLoaded ? 'opacity-100 w-24 md:w-40' : 'opacity-0 w-0'}`}
-      style={{ background: 'linear-gradient(to right, var(--color-accent,), transparent)' }}
-    />
+          .hero-section {
+            height: auto;          /* let the video dictate the height */
+            min-height: 100dvh;    /* always fill the screen at minimum */
+            overflow: visible;     /* allow section to grow beyond viewport */
+          }
 
-  </div>
-</div>
+          .hero-video {
+            /* Take the video OUT of absolute positioning */
+            position: relative;
+            inset: unset;
+            display: block;        /* removes inline baseline gap */
+            width: 100%;
+            height: auto;          /* natural aspect ratio — no crop */
+            object-fit: unset;     /* not needed; size is now natural */
+            min-height: 100dvh;    /* ensure it fills screen if video is short */
+          }
 
+          /* Overlay still needs to cover the full (taller) section */
+          .hero-overlay {
+            position: absolute;
+            inset: 0;
+            bottom: 0;
+          }
+        }
 
+        /* Very short landscape phones (iPhone SE landscape, etc.) */
+        @media (orientation: landscape) and (max-height: 500px) {
+          .hero-section { min-height: 320px; }
+          .hero-video   { object-position: center center; }
+        }
 
-        {/* ── Scroll hint ── */}
-        <div
-          className={`absolute bottom-8 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center gap-2 animate__animated ${isLoaded ? 'animate__fadeInUp' : 'opacity-0'}`}
-          style={{ animationDelay: '1.4s' }}
-        >
-          <span
-            className="text-[0.48rem] uppercase tracking-[0.4em]"
-            style={{ color: 'var(--color-accent,#C084FC)', fontFamily: 'var(--font-heading,sans-serif)' }}
-          >
-            Scroll
-          </span>
-          <div
-            className="w-px h-9 animate-pulse"
-            style={{ background: 'linear-gradient(to bottom, var(--color-accent,#C084FC), transparent)' }}
+        .hero-overlay {
+          position: absolute;
+          inset: 0;
+          background: rgba(79, 69, 50, 0.30);
+          pointer-events: none;
+        }
+
+        .hero-error {
+          position: absolute;
+          inset: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: rgba(209,196,175,0.5);
+          font-family: system-ui, sans-serif;
+          font-size: 14px;
+          letter-spacing: 0.05em;
+        }
+
+        .sr-only {
+          position: absolute;
+          width: 1px; height: 1px;
+          padding: 0; margin: -1px;
+          overflow: hidden;
+          clip: rect(0,0,0,0);
+          white-space: nowrap;
+          border: 0;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .hero-video { transition: none; }
+        }
+      `}</style>
+
+      <section className="hero-section" aria-label="Hero">
+
+        {videoSrc && (
+          <video
+            ref={videoRef}
+            className={`hero-video${videoReady ? ' ready' : ''}`}
+            src={videoSrc}
+            poster={posterSrc || undefined}
+            muted
+            playsInline
+            disablePictureInPicture
+            preload="auto"
+            aria-hidden="true"
+            onCanPlayThrough={() => setVideoReady(true)}
+            onError={() => setHasError(true)}
+            onEnded={(e) => e.currentTarget.pause()}
           />
-        </div>
+        )}
 
+        {hasError && (
+          <div className="hero-error" role="alert">
+            Video could not be loaded.
+          </div>
+        )}
+
+        <div className="hero-overlay" aria-hidden="true" />
       </section>
     </>
   );

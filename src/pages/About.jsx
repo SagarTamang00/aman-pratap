@@ -87,7 +87,7 @@
       <section
         ref={sectionRef}
 
-  className="relative w-full min-h-screen flex items-center py-24 overflow-hidden"
+  className="relative w-full min-h-screen flex items-center py-24 overflow-hidden mt-4"
   style={{ background: "var(--color-bg-section)" }}
     >
         {/* Ambient glow */}
@@ -140,7 +140,7 @@
                 </div>
 
   {/* title */}
-  <h2 className="text-[clamp(36px,6vw,72px)] font-black uppercase mb-8 leading-[0.9] text-[#1F4891] magnetic">
+  <h2 className="text-[clamp(36px,6vw,72px)] font-black uppercase mb-8 leading-[0.9] var(--color-heading) magnetic">
     Crafting{" "}
     <span className="text-transparent bg-clip-text bg-linear-to-r from-[#c9a84c] to-[#e6d38e]">
       Stories
@@ -148,7 +148,7 @@
   </h2>
       
                 {/* text */}
-                <div className="space-y-6 text-[#1F4891]/70 text-base leading-relaxed max-w-2xl">
+                <div className="space-y-6 var(--color-heading) text-base leading-relaxed max-w-2xl">
                   <p>
                     Cinema is not just storytelling — it is controlled emotion, rhythm, and silence.
                   </p>
@@ -161,14 +161,14 @@
                 <div className="grid grid-cols-2 gap-8 mt-12 pt-10 border-t border-[#c9a84c]/20">
                   <div className="magnetic">
                     <h3 className="text-4xl font-bold text-[#c9a84c]">10+</h3>
-                    <p className="text-xs tracking-[0.2em] text-[#1F4891] uppercase">
+                    <p className="text-xs tracking-[0.2em] var(--color-heading) uppercase">
                       Years Experience
                     </p>
                   </div>
 
                   <div className="magnetic">
                     <h3 className="text-4xl font-bold text-[#c9a84c]">25+</h3>
-                    <p className="text-xs tracking-[0.2em] text-[#1F4891] uppercase">
+                    <p className="text-xs tracking-[0.2em] var(--color-heading) uppercase">
                       Projects
                     </p>
                   </div>

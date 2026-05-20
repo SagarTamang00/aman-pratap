@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import ScrollToTop from './components/ScrollToTop'
+import Loader from './components/Loader'
 
 import Hero from './pages/Hero'
 import Awards from './pages/Award'
@@ -12,9 +14,12 @@ import News from './pages/News'
 import Contact from './pages/Contact'
 
 const Home = () => {
+  const [loaderDone, setLoaderDone] = useState(false)
+
   return (
     <>
-      <Hero />
+    <Loader onComplete={() => setLoaderDone(true)} />
+    <Hero videoSrc="/introduction.mp4" canPlay={loaderDone} />
       <Awards />
       <Project />
       <Footer />
@@ -22,31 +27,26 @@ const Home = () => {
   )
 }
 
-const AboutPage = () => {
-  return (
-    <>
-      <About />
-      <Academic />
-    </>
-  )
-}
+const AboutPage = () => (
+  <>
+    <About />
+    <Academic />
+  </>
+)
 
-const App = () => {
-  return (
-    <>
-      <ScrollToTop />
-      <Navbar />
-
-      <main>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/news" element={<News />} />
-          <Route path="/contact" element={<Contact />} /> 
-        </Routes>
-      </main>
-    </>
-  )
-}
+const App = () => (
+  <>
+    <ScrollToTop />
+    <Navbar />
+    <main>
+      <Routes>
+        <Route path="/"        element={<Home />} />
+        <Route path="/about"   element={<AboutPage />} />
+        <Route path="/news"    element={<News />} />
+        <Route path="/contact" element={<Contact />} />
+      </Routes>
+    </main>
+  </>
+)
 
 export default App

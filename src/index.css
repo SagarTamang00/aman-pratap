@@ -1,27 +1,29 @@
 @import "tailwindcss";
 
+
 :root {
   /* Background */
-  --color-bg: transparent;
-  --color-bg-section: transparent;
+  --color-bg: #d1c4af;
+  --color-bg-section: #d1c4af;
 
   /* Text */
-  --color-text: #f5f0e8;
-  --color-heading: #ffffff;
-  --color-body: rgba(245, 240, 232, 0.75);
+  --color-span: #FFFFFF;
+  --color-text: #4f4532;
+  --color-heading: #4f4532;
+  --color-body: #4f4532;
 
   /* Gold accents */
-  --color-primary: #c9a84c;
-  --color-accent: #e6d38e;
+  --color-primary: #8b6d5c;
+  --color-accent: #4f4532;  
   --color-accent-light: #f4e2a3;
   --color-navy: #c9a84c;
 
   /* Legacy variables */
-  --text: #f5f0e8;
-  --text-h: #ffffff;
-  --bg: #fff;
+  --text: #4f4532;
+  --text-h: #4f4532;
+  --bg: #d1c4af;
   --border: rgba(230, 211, 142, 0.18);
-  --code-bg: rgba(255,255,255,0.05);
+  --code-bg: rgba(79, 69, 50, 0.05);
 
   --accent: #c9a84c;
   --accent-bg: rgba(201,168,76,0.12);
@@ -33,20 +35,78 @@
     rgba(201,168,76,0.08) 0 10px 15px -3px,
     rgba(201,168,76,0.05) 0 4px 6px -2px;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+--sans: 'Nunito', system-ui, 'Segoe UI', Roboto, sans-serif;
+--heading: 'Nunito', system-ui, 'Segoe UI', Roboto, sans-serif;
+--mono: 'Nunito', ui-monospace, Consolas, monospace;
+}
+
+
+html, body {
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: #c9a84c #1e1c15;
+}
+
+/* Chrome / Safari / Edge */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px; /* for horizontal scrollbars */
+}
+::-webkit-scrollbar-track {
+  background: transparent
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb {
+  background: #c9a84c;
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #e0bf6a;
+}
+::-webkit-scrollbar-thumb:active {
+  background: #a8862f;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
-  background: linear-gradient(
-    135deg,
-    #040814 0%,
-    #082f49 50%,
-    #2e1065 100%
-  );
+  background: #d1c4af;
   background-attachment: fixed;
-  color: var(--color-body);
+  color: #4f4532;
+}
+
+   /*Acadmic Page*/
+   .stack-wrapper canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+@media (max-width: 768px) {
+  .stack-wrapper {
+    min-height: 680px !important;
+  }
+
+  .edu-card {
+    padding-bottom: 7rem !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .stack-wrapper {
+    min-height: 650px !important;
+  }
+
+  .edu-card {
+    padding-bottom: 6.5rem !important;
+  }
+}
+
+.stack-wrapper {
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.edu-card {
+  user-select: none;
+  -webkit-user-drag: none;
 }

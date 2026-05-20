@@ -1,22 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Award, Trophy, MapPin, Calendar, Sparkles } from "lucide-react";
 
-/* ============================================================
- * Self-contained Awards section.
- * All styling lives in this file (inline <style> + inline styles)
- * so it does not depend on tailwind config or external CSS tokens.
- * ============================================================ */
-
-const COLORS = {
-  bg: "#FFFFFF",
-  fg: "#1F4891",
-  gold: "#c9a84c",
-  goldSoft: "#e6d38e",
-};
-
-const FONT_DISPLAY = '"Bebas Neue", "Impact", sans-serif';
-const FONT_BODY = '"EB Garamond", Georgia, serif';
-
 const awardsData = [
   {
     year: "2024",
@@ -68,225 +52,9 @@ const awardsData = [
   },
 ];
 
-const styles = `
-.awards-section {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  padding: 5rem 0;
-  font-family: ${FONT_BODY};
-  color: ${COLORS.fg};
-}
-@media (min-width: 640px) { .awards-section { padding: 7rem 0; } }
-@media (min-width: 1024px) { .awards-section { padding: 8rem 0; } }
-
-.awards-glow {
-  position: absolute; inset: 0; pointer-events: none;
-  background: radial-gradient(ellipse 80% 60% at 50% 100%, rgba(201,168,76,0.08) 0%, transparent 70%);
-}
-.awards-line {
-  position: absolute; left: 0; right: 0; height: 1px; pointer-events: none;
-  background: linear-gradient(to right, transparent, rgba(201,168,76,0.4), transparent);
-}
-.awards-line.top { top: 0; }
-.awards-line.bottom { bottom: 0; opacity: 0.5; }
-
-.awards-ghost {
-  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-  pointer-events: none; user-select: none; overflow: hidden;
-}
-.awards-ghost span {
-  font-family: ${FONT_DISPLAY};
-  font-weight: 900; text-transform: uppercase; line-height: 1;
-  white-space: nowrap; letter-spacing: -0.02em;
-  color: rgba(201,168,76,0.04);
-  font-size: 28vw;
-}
-@media (min-width: 640px) { .awards-ghost span { font-size: 22vw; } }
-@media (min-width: 1024px) { .awards-ghost span { font-size: 18vw; } }
-
-.awards-container {
-  position: relative; z-index: 10;
-  max-width: 1280px; margin: 0 auto;
-  padding: 0 1.25rem;
-}
-@media (min-width: 640px) { .awards-container { padding: 0 2.5rem; } }
-@media (min-width: 1024px) { .awards-container { padding: 0 5rem; } }
-
-.awards-header { margin-bottom: 3.5rem; }
-@media (min-width: 640px) { .awards-header { margin-bottom: 5rem; } }
-
-.awards-eyebrow {
-  display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem;
-}
-.awards-eyebrow .bar {
-  height: 1px; width: 2.5rem;
-  background: linear-gradient(to right, transparent, ${COLORS.gold});
-}
-@media (min-width: 640px) { .awards-eyebrow .bar { width: 3.5rem; } }
-.awards-eyebrow .label {
-  font-size: 10px; text-transform: uppercase; letter-spacing: 0.4em; color: ${COLORS.gold};
-}
-
-.awards-title-row {
-  display: flex; flex-direction: column; gap: 2rem;
-}
-@media (min-width: 1024px) {
-  .awards-title-row { flex-direction: row; align-items: flex-end; justify-content: space-between; }
-}
-
-.awards-title {
-  font-family: ${FONT_DISPLAY};
-  font-weight: 900; text-transform: uppercase;
-  line-height: 0.9; letter-spacing: -0.01em;
-  color: ${COLORS.fg};
-  font-size: clamp(2.75rem, 9vw, 6rem);
-  margin: 0;
-}
-.awards-title .accent {
-  background: linear-gradient(to right, ${COLORS.gold}, ${COLORS.goldSoft});
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-}
-
-.awards-stats { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 1.5rem; }
-@media (min-width: 640px) { .awards-stats { gap: 2rem; } }
-.awards-stat { display: flex; align-items: flex-end; gap: 0.5rem; }
-.awards-stat .value {
-  font-family: ${FONT_DISPLAY}; font-weight: 900; line-height: 1;
-  font-size: clamp(2.5rem, 5vw, 4rem);
-}
-.awards-stat .label {
-  padding-bottom: 0.5rem; font-size: 0.75rem;
-  text-transform: uppercase; letter-spacing: 0.2em;
-  color: rgba(245,240,232,0.3);
-}
-.awards-stat-divider {
-  display: none; height: 3rem; width: 1px; background: rgba(201,168,76,0.2);
-}
-@media (min-width: 640px) { .awards-stat-divider { display: block; } }
-
-.awards-rule {
-  margin-top: 2.5rem; height: 1px;
-  background: linear-gradient(to right, rgba(201,168,76,0.4), transparent);
-  transition: width 1.2s ease 0.3s;
-}
-
-.awards-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
-
-.award-item { position: relative; }
-.award-bg {
-  position: absolute; inset: 0; pointer-events: none;
-  background: linear-gradient(to right, rgba(201,168,76,0.06), rgba(201,168,76,0.02), transparent);
-  transition: opacity 0.5s ease;
-}
-.award-accent {
-  position: absolute; left: 0; top: 50%; height: 3rem; width: 2px;
-  background: linear-gradient(to bottom, transparent, ${COLORS.gold}, transparent);
-  pointer-events: none; transition: all 0.5s ease;
-}
-
-.award-row {
-  position: relative;
-  display: grid; grid-template-columns: 1fr; gap: 0.75rem;
-  border-bottom: 1px solid rgba(201,168,76,0.1);
-  padding: 1.5rem 1rem;
-}
-@media (min-width: 640px) {
-  .award-row {
-    grid-template-columns: 5rem 1fr;
-    column-gap: 1.5rem;
-    padding: 1.75rem 1rem;
-  }
-}
-@media (min-width: 1024px) {
-  .award-row {
-    grid-template-columns: 5rem 7rem 1fr auto;
-    column-gap: 2rem;
-    align-items: center;
-    padding: 2rem 1rem;
-  }
-}
-
-.award-year {
-  display: flex; align-items: center; gap: 0.5rem;
-  color: rgba(201,168,76,0.6);
-  transition: color 0.3s ease;
-  font-family: ${FONT_DISPLAY};
-  font-size: 0.875rem; font-weight: 700; letter-spacing: 0.15em;
-}
-.award-item:hover .award-year { color: ${COLORS.gold}; }
-
-.award-badge {
-  display: inline-flex; align-items: center; gap: 0.375rem;
-  border: 1px solid rgba(201,168,76,0.4);
-  border-radius: 9999px;
-  padding: 0.25rem 0.625rem;
-  font-size: 9px; text-transform: uppercase; letter-spacing: 0.3em;
-  color: ${COLORS.gold};
-  transition: all 0.3s ease;
-}
-.award-badge.nominee {
-  border-color: rgba(245,240,232,0.15);
-  color: rgba(245,240,232,0.4);
-}
-
-.award-title {
-  font-family: ${FONT_DISPLAY};
-  font-weight: 900; text-transform: uppercase;
-  line-height: 1.1; letter-spacing: 0.02em;
-  font-size: clamp(1.25rem, 2.4vw, 1.75rem);
-  margin: 0;
-  color: rgba(245,240,232,0.78);
-  transition: color 0.3s ease;
-}
-.award-film {
-  margin: 0; font-size: 0.875rem; font-style: italic;
-  color: rgba(245,240,232,0.45);
-  transition: color 0.3s ease;
-}
-.award-item:hover .award-film { color: rgba(245,240,232,0.7); }
-
-.award-meta {
-  display: flex; flex-direction: column; gap: 0.25rem;
-  transition: all 0.5s ease;
-}
-@media (min-width: 1024px) { .award-meta { max-width: 20rem; text-align: right; } }
-.award-festival {
-  margin: 0; font-size: 0.75rem;
-  text-transform: uppercase; letter-spacing: 0.2em;
-  color: rgba(201,168,76,0.85);
-}
-.award-location {
-  margin: 0; font-size: 0.75rem;
-  color: rgba(245,240,232,0.4);
-  display: flex; align-items: center; gap: 0.375rem;
-}
-@media (min-width: 1024px) { .award-location { justify-content: flex-end; } }
-
-.year-cal-icon { display: inline; }
-@media (min-width: 640px) { .year-cal-icon { display: none; } }
-
-.awards-footer {
-  margin-top: 3rem; padding-top: 1.5rem;
-  border-top: 1px solid rgba(201,168,76,0.1);
-  display: flex; flex-direction: column; align-items: flex-start;
-  justify-content: space-between; gap: 1rem;
-}
-@media (min-width: 640px) {
-  .awards-footer { margin-top: 4rem; flex-direction: row; align-items: center; }
-}
-.awards-footer p {
-  margin: 0; font-size: 10px;
-  text-transform: uppercase; letter-spacing: 0.3em;
-  color: rgba(245,240,232,0.25);
-}
-.awards-footer .sig { display: flex; align-items: center; gap: 0.75rem; }
-.awards-footer .sig .bar { height: 1px; width: 2rem; background: rgba(201,168,76,0.3); }
-`;
-
 const Awards = () => {
-  const [activeIndex, setActiveIndex] = useState(null);
-  const [isVisible, setIsVisible] = useState(false);
+  const [activeIndex,   setActiveIndex]   = useState(null);
+  const [isVisible,     setIsVisible]     = useState(false);
   const [revealedCount, setRevealedCount] = useState(0);
   const sectionRef = useRef(null);
 
@@ -305,7 +73,7 @@ const Awards = () => {
           }, 140);
         }
       },
-      { threshold: 0.1 },
+      { threshold: 0.1 }
     );
     observer.observe(node);
     return () => observer.unobserve(node);
@@ -314,164 +82,216 @@ const Awards = () => {
   const winners = awardsData.filter((a) => a.type === "Winner").length;
 
   return (
-    <section ref={sectionRef} id="awards" className="awards-section">
-      <style>{styles}</style>
+    <section
+      ref={sectionRef}
+      id="awards"
+      className="relative overflow-hidden py-32 px-6 bg-[var(--color-bg-section)]"
+    >
+      {/* Ambient glow */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: "radial-gradient(circle at top left, rgba(201,168,76,0.12), transparent 40%)" }}
+      />
 
-      <div className="awards-glow" />
-      <div className="awards-line top" />
-      <div className="awards-line bottom" />
+      {/* Top / bottom seam lines */}
+      <div
+        className="absolute top-0 left-1/2 -translate-x-1/2 h-px pointer-events-none"
+        style={{ width: "min(92%, 1400px)", background: "linear-gradient(to right, transparent, rgba(201,168,76,0.4), transparent)" }}
+      />
+      <div
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 h-px pointer-events-none"
+        style={{ width: "min(92%, 1400px)", background: "linear-gradient(to right, transparent, rgba(201,168,76,0.4), transparent)" }}
+      />
 
-      <div className="awards-ghost">
-        <span>Honours</span>
+      {/* Ghost watermark */}
+      <div className="absolute top-12 -right-4 pointer-events-none select-none">
+        <span
+          className="font-black uppercase leading-none tracking-[-0.06em]"
+          style={{ fontSize: "clamp(5rem, 14vw, 12rem)", color: "rgba(79,69,50,0.04)" }}
+        >
+          Honours
+        </span>
       </div>
 
-      <div className="awards-container">
-        {/* Header */}
+      {/* Container */}
+      <div className="relative z-10 max-w-[1200px] mx-auto">
+
+        {/* ── Header ── */}
         <div
-          className="awards-header"
+          className="mb-16 transition-all duration-[900ms] ease-out"
           style={{
-            opacity: isVisible ? 1 : 0,
+            opacity:   isVisible ? 1 : 0,
             transform: isVisible ? "translateY(0)" : "translateY(30px)",
-            transition: "all 0.9s ease",
           }}
         >
-          <div className="awards-eyebrow">
-            <div className="bar" />
-            <Sparkles size={14} color={COLORS.gold} strokeWidth={1.5} />
-            <span className="label">Recognition</span>
+          {/* Eyebrow */}
+          <div className="inline-flex items-center gap-3 mb-6">
+            <div className="w-12 h-px bg-[var(--color-navy)]" />
+            <Sparkles size={14} color="var(--color-navy)" strokeWidth={1.5} />
+            <span className="text-[0.75rem] uppercase tracking-[0.22em] font-extrabold text-[var(--color-heading)]">
+              Recognition
+            </span>
           </div>
 
-          <div className="awards-title-row">
-            <h2 className="awards-title">
-              Awards &amp; <span className="accent">Honours</span>
+          {/* Title row */}
+          <div className="flex justify-between items-end gap-8 flex-wrap">
+            <h2
+              className="m-0 font-black leading-[0.95] tracking-[-0.05em] text-[var(--color-heading)]"
+              style={{ fontSize: "clamp(3rem, 7vw, 5.5rem)" }}
+            >
+              Awards &amp;{" "}
+              <span className="text-[var(--color-navy)] italic">Honours</span>
             </h2>
 
-            <div className="awards-stats">
-              <div className="awards-stat">
-                <span className="value" style={{ color: COLORS.gold }}>
+            {/* Stats pill */}
+            <div className="flex items-center gap-6 px-5 py-4 rounded-full bg-white/20 border border-[rgba(79,69,50,0.08)] backdrop-blur-md w-full sm:w-auto justify-center sm:justify-start">
+              <div className="flex flex-col gap-1">
+                <span className="text-[1.8rem] font-black leading-none text-[var(--color-navy)]">
                   {String(revealedCount).padStart(2, "0")}
                 </span>
-                <span className="label">
+                <span className="text-[0.72rem] uppercase tracking-[0.14em] font-bold text-[rgba(79,69,50,0.7)]">
                   / {String(awardsData.length).padStart(2, "0")} Total
                 </span>
               </div>
-              <div className="awards-stat-divider" />
-              <div className="awards-stat">
-                <span className="value" style={{ color: "rgba(245,240,232,0.85)" }}>
+              <div className="w-px h-10 bg-[rgba(79,69,50,0.1)]" />
+              <div className="flex flex-col gap-1">
+                <span className="text-[1.8rem] font-black leading-none text-[var(--color-heading)]">
                   {String(winners).padStart(2, "0")}
                 </span>
-                <span className="label">Wins</span>
+                <span className="text-[0.72rem] uppercase tracking-[0.14em] font-bold text-[rgba(79,69,50,0.7)]">
+                  Wins
+                </span>
               </div>
             </div>
           </div>
 
+          {/* Expanding rule */}
           <div
-            className="awards-rule"
-            style={{ width: isVisible ? "100%" : "0%" }}
+            className="mt-8 h-px transition-[width] duration-[1200ms] ease-out"
+            style={{
+              width: isVisible ? "100%" : "0%",
+              background: "linear-gradient(to right, var(--color-navy), rgba(79,69,50,0.08))",
+            }}
           />
         </div>
 
-        {/* List */}
-        <ul className="awards-list">
+        {/* ── Award rows ── */}
+        <ul className="flex flex-col gap-4 m-0 p-0 list-none">
           {awardsData.map((award, i) => {
             const isActive = activeIndex === i;
             const isWinner = award.type === "Winner";
+
             return (
               <li
                 key={`${award.year}-${award.title}-${i}`}
-                className="award-item"
+                className="relative overflow-hidden rounded-[2rem] border bg-white/20 backdrop-blur-md cursor-default transition-[border-color,box-shadow,transform] duration-[450ms] ease-out"
+                style={{
+                  borderColor: isActive ? "rgba(201,168,76,0.3)" : "rgba(79,69,50,0.08)",
+                  boxShadow:   isActive ? "0 12px 30px rgba(79,69,50,0.08), 0 2px 10px rgba(201,168,76,0.08)" : "none",
+                  transform:   isActive ? "translateY(-4px)" : "translateY(0)",
+                  opacity:     i < revealedCount ? 1 : 0,
+                  transition:  `opacity 0.6s ease ${i * 0.06}s, transform 0.6s ease ${i * 0.06}s, border-color 0.45s ease, box-shadow 0.45s ease`,
+                }}
                 onMouseEnter={() => setActiveIndex(i)}
                 onMouseLeave={() => setActiveIndex(null)}
-                onFocus={() => setActiveIndex(i)}
-                onBlur={() => setActiveIndex(null)}
-                style={{
-                  opacity: i < revealedCount ? 1 : 0,
-                  transform:
-                    i < revealedCount ? "translateY(0)" : "translateY(20px)",
-                  transition: `opacity 0.6s ease ${i * 0.06}s, transform 0.6s ease ${i * 0.06}s`,
-                }}
               >
-                <div className="award-bg" style={{ opacity: isActive ? 1 : 0 }} />
+                {/* Hover gradient fill */}
                 <div
-                  className="award-accent"
+                  className="absolute inset-0 pointer-events-none transition-opacity duration-[400ms]"
                   style={{
-                    opacity: isActive ? 1 : 0,
-                    transform: `translateY(-50%) scaleY(${isActive ? 1 : 0.4})`,
+                    opacity:    isActive ? 1 : 0,
+                    background: "linear-gradient(135deg, rgba(201,168,76,0.08), transparent)",
                   }}
                 />
 
-                <div className="award-row">
-                  <div className="award-year">
-                    <span className="year-cal-icon">
+                {/* Left accent bar */}
+                <div
+                  className="absolute left-0 top-1/2 w-1 rounded-full pointer-events-none transition-[opacity,transform] duration-[450ms]"
+                  style={{
+                    height:     "70%",
+                    background: "linear-gradient(to bottom, var(--color-navy), var(--color-primary))",
+                    opacity:    isActive ? 1 : 0,
+                    transform:  `translateY(-50%) scaleY(${isActive ? 1 : 0.4})`,
+                  }}
+                />
+
+                {/* Row grid — 4 cols on xl, 3 on md, 1 on mobile */}
+                <div className="relative z-10 grid grid-cols-1 md:grid-cols-[110px_130px_1fr] xl:grid-cols-[120px_140px_1fr_320px] items-center gap-4 p-6 md:p-8">
+
+                  {/* Year */}
+                  <div className="flex items-center gap-3 text-[0.95rem] font-extrabold tracking-[0.05em] text-[var(--color-heading)]">
+                    <span className="w-8 h-8 rounded-full grid place-items-center bg-[rgba(201,168,76,0.14)] shrink-0">
                       <Calendar size={14} strokeWidth={1.5} />
                     </span>
-                    <span>{award.year}</span>
+                    {award.year}
                   </div>
 
+                  {/* Badge */}
                   <div>
                     <span
-                      className={`award-badge ${isWinner ? "" : "nominee"}`}
-                      style={{
-                        background:
-                          isActive && isWinner
-                            ? "rgba(201,168,76,0.1)"
-                            : "transparent",
-                      }}
+                      className="inline-flex items-center gap-2 px-3 py-2 rounded-full text-[0.72rem] font-extrabold uppercase tracking-[0.12em] transition-colors duration-[450ms]"
+                      style={
+                        isWinner
+                          ? isActive
+                            ? { background: "var(--color-navy)", color: "#fff", border: "1px solid transparent" }
+                            : { background: "rgba(201,168,76,0.14)", border: "1px solid rgba(201,168,76,0.18)", color: "var(--color-heading)" }
+                          : { background: "rgba(79,69,50,0.08)", border: "1px solid rgba(79,69,50,0.08)", color: "var(--color-heading)" }
+                      }
                     >
-                      {isWinner ? (
-                        <Trophy size={10} strokeWidth={2} />
-                      ) : (
-                        <Award size={10} strokeWidth={2} />
-                      )}
+                      {isWinner ? <Trophy size={10} strokeWidth={2} /> : <Award size={10} strokeWidth={2} />}
                       {award.type}
                     </span>
                   </div>
 
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0.375rem" }}>
-                    <h3
-                      className="award-title"
-                      style={{
-                        color: isActive ? COLORS.fg : "rgba(245,240,232,0.78)",
-                      }}
-                    >
+                  {/* Title + film */}
+                  <div className="flex flex-col gap-1.5">
+                    <h3 className="m-0 text-[1.2rem] md:text-[1.35rem] font-black leading-[1.1] tracking-[-0.03em] text-[var(--color-heading)]">
                       {award.title}
                     </h3>
-                    <p className="award-film">{award.film}</p>
+                    <p className="m-0 text-[0.92rem] italic text-[rgba(79,69,50,0.7)]">
+                      {award.film}
+                    </p>
                   </div>
 
+                  {/* Festival + location — full width on < xl */}
                   <div
-                    className="award-meta"
+                    className="flex flex-col gap-1.5 xl:items-end md:col-span-3 xl:col-span-1 transition-[opacity,transform] duration-[350ms]"
                     style={{
-                      opacity: isActive ? 1 : 0.55,
+                      opacity:   isActive ? 1 : 0.55,
                       transform: `translateX(${isActive ? 0 : 6}px)`,
                     }}
                   >
-                    <p className="award-festival">{award.festival}</p>
-                    <p className="award-location">
+                    <p className="m-0 text-[0.95rem] font-extrabold text-[var(--color-heading)] xl:text-right">
+                      {award.festival}
+                    </p>
+                    <p className="m-0 flex items-center gap-1.5 text-[0.82rem] text-[rgba(79,69,50,0.65)]">
                       <MapPin size={12} strokeWidth={1.5} />
                       {award.location}
                     </p>
                   </div>
+
                 </div>
               </li>
             );
           })}
         </ul>
 
-        {/* Footer */}
+        {/* ── Footer ── */}
         <div
-          className="awards-footer"
-          style={{
-            opacity: isVisible ? 1 : 0,
-            transition: "opacity 1s ease 1s",
-          }}
+          className="mt-16 pt-8 border-t border-[rgba(79,69,50,0.08)] flex flex-wrap justify-between items-center gap-4 transition-opacity duration-[1000ms] delay-[1000ms]"
+          style={{ opacity: isVisible ? 1 : 0 }}
         >
-          <p>International Recognition · 2021 — Present</p>
-          <div className="sig">
-            <div className="bar" />
-            <p>Aman Pratap Adhikary</p>
+          <p className="m-0 text-[0.82rem] tracking-[0.15em] uppercase font-bold text-[rgba(79,69,50,0.65)]">
+            International Recognition · 2021 — Present
+          </p>
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-px bg-(--color-navy)" />
+            <p className="m-0 text-[0.82rem] tracking-[0.15em] uppercase font-bold text-[rgba(79,69,50,0.65)]">
+              Aman Pratap Adhikary
+            </p>
           </div>
         </div>
+
       </div>
     </section>
   );
