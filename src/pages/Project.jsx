@@ -101,7 +101,7 @@ const VideoCard = ({ project, onOpen, isDouble }) => {
                 // If still blocked (very strict browser settings),
                 // retry on first user scroll or click
                 const retryOnInteraction = () => {
-                    video.play().catch(() => {});
+                    video.play().catch(() => { });
                     document.removeEventListener('scroll', retryOnInteraction);
                     document.removeEventListener('click', retryOnInteraction);
                 };
@@ -126,9 +126,8 @@ const VideoCard = ({ project, onOpen, isDouble }) => {
 
     return (
         <div
-            className={`relative cursor-pointer overflow-hidden w-full ${
-                isDouble ? 'md:flex-1 aspect-video' : 'md:w-full aspect-video'
-            }`}
+            className={`relative cursor-pointer overflow-hidden w-full ${isDouble ? 'md:flex-1 aspect-video' : 'md:w-full aspect-video'
+                }`}
             style={{
                 borderRadius: '16px',
                 background: '#0d0b09',
@@ -473,7 +472,7 @@ const Projects = () => {
                                 The{' '}
                                 <span
                                     className="text-transparent bg-clip-text"
-                                    style={{ color: "var(--color-accent)",}}
+                                    style={{ color: "var(--color-accent)", }}
                                 >
                                     Movies
                                 </span>

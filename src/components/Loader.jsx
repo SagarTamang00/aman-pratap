@@ -1,67 +1,61 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const noop = () => {};
+const noop = () => { };
 
 const Loader = ({ onComplete = noop }) => {
-  const [count,   setCount]   = useState(3);
-  const [opening, setOpening] = useState(false);
-  const [gone,    setGone]    = useState(false);
+  // ✅ FIX: Check sessionStorage via lazy useState initializer (runs once, before render)
+  const [skip] = useState(() => !!sessionStorage.getItem('loaderShown'));
 
-  /*
-   * FIX: wrap onComplete in a ref so the effect below never needs it as a
-   * dep (avoids stale-closure restarts if the parent re-renders mid-load).
-   */
+  const [count, setCount] = useState(3);
+  const [opening, setOpening] = useState(false);
+  const [gone, setGone] = useState(false);
+
   const onCompleteRef = useRef(onComplete);
   useEffect(() => { onCompleteRef.current = onComplete; }, [onComplete]);
 
-  /* Lock body scroll while loader is visible */
+  // ✅ FIX: Mark loader as shown on first real load
   useEffect(() => {
+    if (!skip) sessionStorage.setItem('loaderShown', 'true');
+  }, [skip]);
+
+  /* Lock body scroll while loader is visible — skip if not showing */
+  useEffect(() => {
+    if (skip) return;
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = ''; };
-  }, []);
+  }, [skip]);
 
   /* Countdown 3 → 2 → 1 → open */
   useEffect(() => {
+    if (skip) return;
     if (count <= 0) {
       setOpening(true);
       return;
     }
     const t = setTimeout(() => setCount(c => c - 1), 700);
     return () => clearTimeout(t);
-  }, [count]);
+  }, [count, skip]);
 
-  /*
-   * FIX: de-couple the three steps so they don't all fire synchronously:
-   *   1. opening = true  → panels animate out (framer handles this)
-   *   2. After panel animation (880ms) → restore scroll & call onComplete
-   *   3. One rAF later → setGone(true) unmounts DOM
-   *
-   * Previously overflow restore + onComplete + setGone all fired in one
-   * setTimeout callback, causing a big synchronous React + layout flush
-   * that janked the page.
-   */
   useEffect(() => {
+    if (skip) return;
     if (!opening) return;
 
-    // Step 2: wait for panel slide-out (matches transition duration 0.88s)
     const t = setTimeout(() => {
       document.body.style.overflow = '';
-
-      // Step 3: signal parent FIRST, then unmount on next frame
       onCompleteRef.current();
-
       requestAnimationFrame(() => {
         setGone(true);
       });
-    }, 900); // 900ms ≈ panel transition (880ms) + tiny buffer
+    }, 900);
 
     return () => clearTimeout(t);
-  }, [opening]);
+  }, [opening, skip]);
 
-  if (gone) return null;
+  // ✅ FIX: All hooks above — safe to early-return now
+  if (skip || gone) return null;
 
-  const progress     = (3 - Math.max(count, 1)) / 3;
+  const progress = (3 - Math.max(count, 1)) / 3;
   const panelPointer = opening ? 'none' : 'auto';
 
   return (
@@ -105,10 +99,6 @@ const Loader = ({ onComplete = noop }) => {
           text-shadow: 0 0 60px rgba(201,168,76,0.4);
           user-select: none;
           display: block;
-          /*
-           * FIX: promote number to its own GPU layer so the large
-           * font re-render doesn't cause a composite stall on slower devices.
-           */
           will-change: transform, opacity;
         }
 
@@ -127,11 +117,6 @@ const Loader = ({ onComplete = noop }) => {
           background: '#4f4532',
           overflow: 'hidden',
           pointerEvents: panelPointer,
-          /*
-           * FIX: will-change + transform3d forces GPU compositing so the
-           * slide-out is handled entirely on the compositor thread — no
-           * main-thread jank.
-           */
           willChange: 'transform',
           transform: 'translateZ(0)',
         }}
@@ -151,8 +136,8 @@ const Loader = ({ onComplete = noop }) => {
           background: '#4f4532',
           overflow: 'hidden',
           pointerEvents: panelPointer,
-          willChange: 'transform',     // FIX: GPU compositing
-          transform: 'translateZ(0)',  // FIX: force layer promotion
+          willChange: 'transform',
+          transform: 'translateZ(0)',
         }}
       >
         <CrosshairHalf side="right" />
@@ -202,8 +187,8 @@ const Loader = ({ onComplete = noop }) => {
                 key={count}
                 className="ldr-number"
                 initial={{ scale: 2.4, opacity: 0 }}
-                animate={{ scale: 1,   opacity: 1 }}
-                exit={{    scale: 0.65, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.65, opacity: 0 }}
                 transition={{ duration: 0.28, ease: 'easeOut' }}
               >
                 {count}
@@ -249,10 +234,10 @@ const CrosshairHalf = ({ side }) => {
 const CornerMark = ({ pos, t, b, l, r }) => (
   <div className="ldr-corner" style={{
     ...pos,
-    borderTop:    t ? '1px solid rgba(201,168,76,0.4)' : 'none',
+    borderTop: t ? '1px solid rgba(201,168,76,0.4)' : 'none',
     borderBottom: b ? '1px solid rgba(201,168,76,0.4)' : 'none',
-    borderLeft:   l ? '1px solid rgba(201,168,76,0.4)' : 'none',
-    borderRight:  r ? '1px solid rgba(201,168,76,0.4)' : 'none',
+    borderLeft: l ? '1px solid rgba(201,168,76,0.4)' : 'none',
+    borderRight: r ? '1px solid rgba(201,168,76,0.4)' : 'none',
   }} />
 );
 

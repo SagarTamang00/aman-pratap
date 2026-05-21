@@ -47,6 +47,91 @@ const newsData = [
   },
 ];
 
+const NewsCard = ({ news, index, showCards }) => {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <a
+      href={news.link}
+      target="_blank"
+      rel="noopener noreferrer"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onTouchStart={() => setHovered(true)}
+      onTouchEnd={() => setHovered(false)}
+      className={`group rounded-3xl overflow-hidden transition-all duration-700 hover:-translate-y-3 hover:scale-[1.02] ${
+        showCards ? "opacity-100 translate-y-0" : "opacity-0 translate-y-16"
+      }`}
+      style={{
+        backgroundColor: "var(--color-bg)",
+        border: "1px solid rgba(0, 0, 0, 0.12)",
+        boxShadow: hovered
+          ? "0 12px 24px rgba(0, 0, 0, 0.12)"
+          : "0 4px 8px rgba(0, 0, 0, 0.06)",
+        transitionDelay: showCards ? "0ms" : `${index * 200}ms`,
+        transition: "opacity 700ms, transform 700ms, box-shadow 300ms ease, border-color 300ms",
+      }}
+    >
+      {/* Image */}
+      <div className="overflow-hidden">
+        <img
+          src={news.image}
+          alt={news.title}
+          className="w-full h-64 object-cover group-hover:scale-110 transition duration-700"
+        />
+      </div>
+
+      {/* Content */}
+      <div className="p-6">
+        {/* Category + Date */}
+        <div className="flex items-center justify-between mb-4">
+          <span
+            className="text-xs md:text-sm font-semibold px-4 py-1 rounded-full"
+            style={{
+              backgroundColor: "var(--color-primary)",
+              color: "var(--color-accent-light)",
+            }}
+          >
+            {news.category}
+          </span>
+
+          <span
+            className="text-sm"
+            style={{ color: "var(--color-body)" }}
+          >
+            {news.date}
+          </span>
+        </div>
+
+        {/* Title */}
+        <h3
+          className="text-2xl font-bold mb-3 leading-snug transition duration-300 group-hover:text-(--color-primary)"
+          style={{ color: "var(--color-heading)" }}
+        >
+          {news.title}
+        </h3>
+
+        {/* Description */}
+        <p
+          className="text-sm leading-relaxed"
+          style={{ color: "var(--color-body)" }}
+        >
+          {news.description}
+        </p>
+
+        {/* Read More */}
+        <div
+          className="mt-6 inline-flex items-center gap-2 font-semibold transition-all duration-300 group-hover:translate-x-2"
+          style={{ color: "var(--color-accent)" }}
+        >
+          Read More
+          <span>→</span>
+        </div>
+      </div>
+    </a>
+  );
+};
+
 const News = () => {
   const [showCards, setShowCards] = useState(false);
 
@@ -68,11 +153,10 @@ const News = () => {
 
         {/* Heading */}
         <div
-          className={`text-center mb-14 transition-all duration-1000 ${
-            showCards
+          className={`text-center mb-14 transition-all duration-1000 ${showCards
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-10"
-          }`}
+            }`}
         >
           <h2
             className="text-4xl md:text-5xl font-bold"
@@ -100,81 +184,12 @@ const News = () => {
         {/* Cards */}
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {newsData.map((news, index) => (
-            <a
+            <NewsCard
               key={news.id}
-              href={news.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`group rounded-3xl overflow-hidden transition-all duration-700 hover:-translate-y-3 hover:scale-[1.02] ${
-                showCards
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-16"
-              }`}
-              style={{
-                backgroundColor: "var(--color-bg)",
-                boxShadow: "var(--shadow)",
-                transitionDelay: `${index * 200}ms`,
-              }}
-            >
-
-              {/* Image */}
-              <div className="overflow-hidden">
-                <img
-                  src={news.image}
-                  alt={news.title}
-                  className="w-full h-64 object-cover group-hover:scale-110 transition duration-700"
-                />
-              </div>
-
-              {/* Content */}
-              <div className="p-6">
-
-                {/* Category + Date */}
-                <div className="flex items-center justify-between mb-4">
-                  <span
-                    className="text-xs md:text-sm font-semibold px-4 py-1 rounded-full"
-                    style={{
-                      backgroundColor: "var(--color-primary)",
-                      color: "var(--color-accent-light)",
-                    }}
-                  >
-                    {news.category}
-                  </span>
-
-                  <span
-                    className="text-sm"
-                    style={{ color: "var(--color-body)" }}
-                  >
-                    {news.date}
-                  </span>
-                </div>
-
-                {/* Title */}
-                <h3
-                  className="text-2xl font-bold mb-3 leading-snug transition duration-300 group-hover:text-(--color-primary)"
-                  style={{ color: "var(--color-heading)" }}
-                >
-                  {news.title}
-                </h3>
-
-                {/* Description */}
-                <p
-                  className="text-sm leading-relaxed"
-                  style={{ color: "var(--color-body)" }}
-                >
-                  {news.description}
-                </p>
-
-                {/* Read More */}
-                <div
-                  className="mt-6 inline-flex items-center gap-2 font-semibold transition-all duration-300 group-hover:translate-x-2"
-                  style={{ color: "var(--color-accent)" }}
-                >
-                  Read More
-                  <span>→</span>
-                </div>
-              </div>
-            </a>
+              news={news}
+              index={index}
+              showCards={showCards}
+            />
           ))}
         </div>
       </div>

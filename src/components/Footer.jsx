@@ -28,31 +28,6 @@ const Footer = () => {
           <div className="w-12 h-0.5 rounded-full bg-gradient-to-r from-[#c9a84c] to-transparent" />
         </div>
 
-        {/* ── NAVIGATION ── */}
-        <div>
-          <p className="text-(--color-span)  text-[0.68rem] uppercase tracking-[0.25em] font-extrabold mb-5">
-            Navigate
-          </p>
-          <nav className="flex flex-col gap-3">
-            {[
-              { label: 'Home',     href: '/' },
-              { label: 'About',    href: '/about' },
-              { label: 'Projects', href: '/projects' },
-              { label: 'Awards',   href: '/awards' },
-              { label: 'News',     href: '/news' },
-              { label: 'Contact',  href: '/contact' },
-            ].map(({ label, href }) => (
-              <a
-                key={label}
-                href={href}
-                className="group flex items-center gap-2 text-[rgba(209,196,175,0.55)] hover:text-[#c9a84c] text-sm font-bold tracking-wide no-underline transition-colors duration-200"
-              >
-                <span className="inline-block w-4 h-px bg-current transition-all duration-200 group-hover:w-6" />
-                {label}
-              </a>
-            ))}
-          </nav>
-        </div>
 
         {/* ── CONTACT ── */}
         <div>
@@ -74,8 +49,8 @@ const Footer = () => {
           <div className="flex gap-3">
             {[
               { icon: <FaInstagram size={14} />, href: '#', label: 'Instagram' },
-              { icon: <FaFacebookF size={14} />, href: '#', label: 'Facebook'  },
-              { icon: <FaYoutube   size={14} />, href: '#', label: 'YouTube'   },
+              { icon: <FaFacebookF size={14} />, href: '#', label: 'Facebook' },
+              { icon: <FaYoutube size={14} />, href: '#', label: 'YouTube' },
             ].map(({ icon, href, label }) => (
               <a
                 key={label}
@@ -97,14 +72,14 @@ const Footer = () => {
         </p>
         <div className="flex items-center gap-3">
           <div className="w-10 h-px bg-[#c9a84c] opacity-40" />
-          
+
           <a
             href="https://yashashtech.com.np"
             target="_blank"
             rel="noopener noreferrer"
             className="text-(--color-span) text-[0.68rem] uppercase tracking-[0.18em] font-bold no-underline"
           >
-            Made by yashashtech.com.np
+            Made by yashashtech
           </a>
         </div>
       </div>
