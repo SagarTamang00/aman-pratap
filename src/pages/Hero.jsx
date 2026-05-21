@@ -106,25 +106,24 @@ const Hero = ({
         }
 
         /* ─────────────────────────────────────────────────────────────
-         * PORTRAIT PHONES — center frame, no crop bias
+         * PORTRAIT & NARROW SCREEN RESPONSIVENESS — show entire video in proper portion
+         * Prevents cropping of text/content in video by scaling the section
+         * to match the video's 16:9 native aspect ratio.
          * ──────────────────────────────────────────────────────────── */
-        @media (orientation: portrait) and (max-width: 768px) {
+        @media (max-aspect-ratio: 16/9) {
           .hero-section {
-            height: 100svh;
-            min-height: 100svh;
-            max-height: 100dvh;
+            margin-top: 90px; /* pull the video down below the fixed nav bar */
+            height: auto;
+            min-height: unset;
+            max-height: unset;
+            aspect-ratio: 16 / 9;
           }
-          .hero-video { object-position: center center; }
-        }
-
-        /* Small portrait phones (≤380px — iPhone SE etc.) */
-        @media (orientation: portrait) and (max-width: 380px) {
-          .hero-video { object-position: center 30%; }
-        }
-
-        /* Tablet portrait */
-        @media (orientation: portrait) and (min-width: 769px) and (max-width: 1024px) {
-          .hero-video { object-position: center 20%; }
+          .hero-video {
+            position: relative;
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+          }
         }
 
         /* Short landscape phones */

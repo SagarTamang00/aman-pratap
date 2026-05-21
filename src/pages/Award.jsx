@@ -85,7 +85,7 @@ const Awards = () => {
     <section
       ref={sectionRef}
       id="awards"
-      className="relative overflow-hidden py-32 px-6 bg-[var(--color-bg-section)]"
+      className="relative overflow-hidden pt-12 pb-32 md:py-32 px-6 bg-[var(--color-bg-section)]"
     >
       {/* Ambient glow */}
       <div
