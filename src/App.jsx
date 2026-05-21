@@ -19,7 +19,7 @@ const Home = () => {
   return (
     <>
     <Loader onComplete={() => setLoaderDone(true)} />
-    <Hero videoSrc="/introduction.mp4" canPlay={loaderDone} />
+    <Hero videoSrc="/intro.mp4" canPlay={loaderDone} />
       <Awards />
       <Project />
       <Footer />

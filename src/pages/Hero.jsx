@@ -33,6 +33,7 @@ const Hero = ({
   return (
     <>
       <style>{`
+        .hero-section,
         .hero-section *,
         .hero-section *::before,
         .hero-section *::after {
@@ -41,15 +42,17 @@ const Hero = ({
           padding: 0;
         }
 
-        /* ══════════════════════════════════════════════════════════════
-         * DESKTOP / LANDSCAPE  — classic full-viewport cover
-         * ══════════════════════════════════════════════════════════════ */
+        /* ─────────────────────────────────────────────────────────────
+         * BASE — desktop, laptop, tablet, mobile (portrait + landscape)
+         * Section is locked to ONE viewport. Video fills it via cover.
+         * ──────────────────────────────────────────────────────────── */
         .hero-section {
           position: relative;
           width: 100%;
-          height: 100vh;
-          height: 100dvh;           /* dynamic viewport — hides no pixels */
+          height: 100vh;            /* fallback */
+          height: 100svh;           /* stable on mobile (no URL-bar jump) */
           min-height: 480px;
+          max-height: 100dvh;       /* never exceed dynamic viewport */
           overflow: hidden;
           background: #4f4532;
           isolation: isolate;
@@ -61,11 +64,7 @@ const Hero = ({
           width: 100%;
           height: 100%;
           object-fit: cover;
-          /*
-           * Anchor to top-center so the subject's face is
-           * always visible even when the frame is cropped vertically.
-           */
-          object-position: center top;
+          object-position: center top; /* keep top of frame / face visible */
           opacity: 0;
           will-change: opacity;
           transition: opacity 1.2s ease;
@@ -74,55 +73,6 @@ const Hero = ({
           -webkit-backface-visibility: hidden;
         }
         .hero-video.ready { opacity: 1; }
-
-        /* ══════════════════════════════════════════════════════════════
-         * PORTRAIT MOBILE — THE CORE FIX
-         *
-         * Problem: on a phone in portrait the video is typically 9:16.
-         * Locking the section to 100dvh + object-fit:cover clips big
-         * chunks off the top and bottom — exactly what you see.
-         *
-         * Fix strategy:
-         *   1. Let the section HEIGHT be driven by the video's content.
-         *   2. Switch the video out of position:absolute (fills parent)
-         *      into normal document flow (position:relative / static).
-         *   3. width:100% + height:auto → browser preserves the video's
-         *      native aspect ratio → ZERO cropping ever.
-         *   4. min-height:100dvh on the section ensures it still covers
-         *      the screen even for short/landscape source video.
-         * ══════════════════════════════════════════════════════════════ */
-        @media (orientation: portrait) and (max-width: 768px) {
-
-          .hero-section {
-            height: auto;          /* let the video dictate the height */
-            min-height: 100dvh;    /* always fill the screen at minimum */
-            overflow: visible;     /* allow section to grow beyond viewport */
-          }
-
-          .hero-video {
-            /* Take the video OUT of absolute positioning */
-            position: relative;
-            inset: unset;
-            display: block;        /* removes inline baseline gap */
-            width: 100%;
-            height: auto;          /* natural aspect ratio — no crop */
-            object-fit: unset;     /* not needed; size is now natural */
-            min-height: 100dvh;    /* ensure it fills screen if video is short */
-          }
-
-          /* Overlay still needs to cover the full (taller) section */
-          .hero-overlay {
-            position: absolute;
-            inset: 0;
-            bottom: 0;
-          }
-        }
-
-        /* Very short landscape phones (iPhone SE landscape, etc.) */
-        @media (orientation: landscape) and (max-height: 500px) {
-          .hero-section { min-height: 320px; }
-          .hero-video   { object-position: center center; }
-        }
 
         .hero-overlay {
           position: absolute;
@@ -141,6 +91,8 @@ const Hero = ({
           font-family: system-ui, sans-serif;
           font-size: 14px;
           letter-spacing: 0.05em;
+          text-align: center;
+          padding: 1rem;
         }
 
         .sr-only {
@@ -153,37 +105,67 @@ const Hero = ({
           border: 0;
         }
 
+        /* ─────────────────────────────────────────────────────────────
+         * PORTRAIT PHONES — center frame, no crop bias
+         * ──────────────────────────────────────────────────────────── */
+        @media (orientation: portrait) and (max-width: 768px) {
+          .hero-section {
+            height: 100svh;
+            min-height: 100svh;
+            max-height: 100dvh;
+          }
+          .hero-video { object-position: center center; }
+        }
+
+        /* Small portrait phones (≤380px — iPhone SE etc.) */
+        @media (orientation: portrait) and (max-width: 380px) {
+          .hero-video { object-position: center 30%; }
+        }
+
+        /* Tablet portrait */
+        @media (orientation: portrait) and (min-width: 769px) and (max-width: 1024px) {
+          .hero-video { object-position: center 20%; }
+        }
+
+        /* Short landscape phones */
+        @media (orientation: landscape) and (max-height: 500px) {
+          .hero-section { min-height: 320px; }
+          .hero-video   { object-position: center center; }
+        }
+
+        /* Ultra-wide / large desktop */
+        @media (min-width: 1600px) {
+          .hero-video { object-position: center 25%; }
+        }
+
         @media (prefers-reduced-motion: reduce) {
           .hero-video { transition: none; }
         }
       `}</style>
 
-      <section className="hero-section" aria-label="Hero">
-
+      <section className="hero-section" aria-label="Hero video">
         {videoSrc && (
           <video
             ref={videoRef}
-            className={`hero-video${videoReady ? ' ready' : ''}`}
+            className={`hero-video ${videoReady ? 'ready' : ''}`}
             src={videoSrc}
-            poster={posterSrc || undefined}
+            poster={posterSrc}
             muted
             playsInline
-            disablePictureInPicture
-            preload="auto"
-            aria-hidden="true"
-            onCanPlayThrough={() => setVideoReady(true)}
+            autoPlay
+            preload="metadata"
+            onLoadedData={() => setVideoReady(true)}
             onError={() => setHasError(true)}
             onEnded={(e) => e.currentTarget.pause()}
           />
         )}
 
         {hasError && (
-          <div className="hero-error" role="alert">
-            Video could not be loaded.
-          </div>
+          <div className="hero-error">Video could not be loaded.</div>
         )}
 
-        <div className="hero-overlay" aria-hidden="true" />
+        <div className="hero-overlay" />
+        <span className="sr-only">Hero background video</span>
       </section>
     </>
   );
