@@ -8,8 +8,8 @@ const Footer = () => {
       {/* Top decorative divider */}
       <div className="max-w-6xl mx-auto mb-14 h-px bg-gradient-to-r from-transparent via-[rgba(201,168,76,0.5)] to-transparent" />
 
-      {/* Main grid */}
-      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
+      {/* Main container */}
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
 
         {/* ── BRAND ── */}
         <div className="flex flex-col gap-4">
@@ -17,9 +17,12 @@ const Footer = () => {
             <p className="text-[#c9a84c] text-[0.68rem] uppercase tracking-[0.28em] font-extrabold mb-2">
               Filmmaker · Director
             </p>
+
             <h2 className="text-[#d1c4af] text-4xl md:text-5xl font-black tracking-tight leading-none m-0">
-              Aman{' '}
+              Aman{" "}
               <span className="text-[#c9a84c] italic">Pratap</span>
+              <br />
+              <span className="text-(--color-span)">Adhikary</span>
             </h2>
           </div>
           <p className="text-[rgba(209,196,175,0.5)] text-sm leading-relaxed max-w-[260px] m-0">
@@ -72,7 +75,6 @@ const Footer = () => {
         </p>
         <div className="flex items-center gap-3">
           <div className="w-10 h-px bg-[#c9a84c] opacity-40" />
-
           <a
             href="https://yashashtech.com.np"
             target="_blank"
@@ -81,6 +83,7 @@ const Footer = () => {
           >
             Made by yashashtech
           </a>
+          <div className="w-10 h-px bg-[#c9a84c] opacity-40" />
         </div>
       </div>
 

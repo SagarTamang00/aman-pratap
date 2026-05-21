@@ -7,32 +7,52 @@ import * as THREE from "three";
 const educationData = [
   {
     level: "Chapter I — Schooling",
-    title: "Secondary Education",
-    school: "XYZ Secondary School",
-    year: "2008 – 2020",
-    meta: { label: "GPA", value: "3.8" },
+    title: "Saint Xavier's School",
+    school: "Saint Xavier's School",
+    year: "1980 – 1990",
+    meta: { label: "School", value: "Schooling" },
     description:
       "Foundation years mastering core disciplines — science, mathematics, and humanities.",
-    bg: "/xavier.jpg",
+    bg: "/xavier.jpeg",
   },
   {
     level: "Chapter II — Higher Secondary",
-    title: "+2 Science / Arts",
-    school: "ABC Higher Secondary",
-    year: "2020 – 2022",
+    title: "+2 Management",
+    school: "Sainik Awasiya Mahavidhalaya",
+    year: "2000",
     meta: { label: "Stream", value: "Management" },
     description: "The turning point — where storytelling met technical curiosity.",
-    bg: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&q=80&w=1200",
+    bg: "/Sainik.jpeg",
   },
   {
     level: "Chapter III — Bachelor's",
-    title: "Bachelor of Arts in Film",
-    school: "Tribhuvan University",
-    year: "2022 – 2026",
-    meta: { label: "Honours", value: "Distinction" },
+    title: "Bachelors in Arts",
+    school: "University of Delhi",
+    year: "1995",
+    meta: { label: "Subject", value: "Arts" },
     description:
       "Where vision met craft through cinematic theory and production.",
-    bg: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&q=80&w=1200",
+    bg: "/unidelhi.jpeg",
+  },
+  {
+    level: "Chapter IV — Master's",
+    title: "Master in Sociology",
+    school: "Tribhuvan University",
+    year: "1998",
+    meta: { label: "Subject", value: "Sociology" },
+    description:
+      "Where vision met craft through cinematic theory and production.",
+    bg: "/tu.jpeg",
+  },
+  {
+    level: "Chapter V — Master's",
+    title: "Master in Arts",
+    school: "Edinburgh University",
+    year: "2006",
+    meta: { label: "Subject", value: "Arts" },
+    description:
+      "Where vision met craft through cinematic theory and production.",
+    bg: "/edin.jpeg",
   },
 ];
 
@@ -85,15 +105,15 @@ function playReelClick() {
     noise.stop(now + 0.12);
 
     setTimeout(() => ctx.close(), 600);
-  } catch (_) {}
+  } catch (_) { }
 }
 
-const MetaItem = ({ label, value }) => (
+const MetaItem = ({ label, value, light = true }) => (
   <div className="flex flex-col min-w-[88px] flex-1 sm:flex-none">
-    <p className="text-[var(--color-accent)] text-[9px] sm:text-[10px] uppercase tracking-wider font-semibold mb-1">
+    <p className={`${light ? 'text-[#c9a84c]' : 'text-[var(--color-accent)]'} text-[9px] sm:text-[10px] uppercase tracking-wider font-semibold mb-1`}>
       {label}
     </p>
-    <p className="text-[var(--color-primary)] text-xs sm:text-sm font-bold break-words">
+    <p className={`${light ? 'text-white' : 'text-[var(--color-primary)]'} text-xs sm:text-sm font-bold break-words`}>
       {value}
     </p>
   </div>
@@ -175,7 +195,7 @@ const ProjectorModel = () => {
 
   const projScale = isMobile ? 0.32 : isTablet ? 0.46 : 0.6;
   const projX = isMobile ? 0 : isTablet ? 2.45 : 3.5;
-const projY = isMobile ? 5.8 : isTablet ? 2.3 : 0.8;
+  const projY = isMobile ? 5.8 : isTablet ? 2.3 : 0.8;
   const targetObj = useMemo(() => {
     const obj = new THREE.Object3D();
     obj.position.set(isMobile ? 0 : -15, isMobile ? -5 : 0, 0);
@@ -219,7 +239,7 @@ const projY = isMobile ? 5.8 : isTablet ? 2.3 : 0.8;
 
       <group
         rotation={[0, Math.PI / 4, 0]}>
-                    {[0, (Math.PI * 2) / 3, (-Math.PI * 2) / 3].map((ry, i) => (
+        {[0, (Math.PI * 2) / 3, (-Math.PI * 2) / 3].map((ry, i) => (
           <group key={i} position={[0, -2.0, 0]} rotation={[0, ry, 0]}>
             <group rotation={[0.4, 0, 0]}>
               <mesh position={[0, -1.5, 0]}>
@@ -321,10 +341,15 @@ const Academic = () => {
   const touchStartX = useRef(null);
   const isAnimating = useRef(false);
   const dragStartX = useRef(null);
-const isDragging = useRef(false);
+  const isDragging = useRef(false);
 
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isDetailsExpanded, setIsDetailsExpanded] = useState(false);
   const total = educationData.length;
+
+  useEffect(() => {
+    setIsDetailsExpanded(false);
+  }, [activeIndex]);
 
   const animateToIndex = useCallback(
     (nextIndex) => {
@@ -424,20 +449,20 @@ const isDragging = useRef(false);
     return () => clearInterval(timerRef.current);
   }, [resetTimer]);
 
-const goTo = useCallback(
-  (idx) => {
-    if (idx === activeIndex || isAnimating.current) return;
+  const goTo = useCallback(
+    (idx) => {
+      if (idx === activeIndex || isAnimating.current) return;
 
-    audioUnlocked.value = true;
+      audioUnlocked.value = true;
 
-    playReelClick();
-    reelSpinSignal.active = true;
+      playReelClick();
+      reelSpinSignal.active = true;
 
-    animateToIndex(idx);
-    resetTimer();
-  },
-  [activeIndex, animateToIndex, resetTimer]
-);
+      animateToIndex(idx);
+      resetTimer();
+    },
+    [activeIndex, animateToIndex, resetTimer]
+  );
 
   const goPrev = useCallback(() => {
     goTo((activeIndex - 1 + total) % total);
@@ -463,61 +488,61 @@ const goTo = useCallback(
     dx < 0 ? goNext() : goPrev();
   };
   const onMouseDown = (e) => {
-  dragStartX.current = e.clientX;
-  isDragging.current = true;
-  audioUnlocked.value = true;
-};
+    dragStartX.current = e.clientX;
+    isDragging.current = true;
+    audioUnlocked.value = true;
+  };
 
-const onMouseUp = async (e) => {
-  if (!isDragging.current || dragStartX.current === null) return;
+  const onMouseUp = async (e) => {
+    if (!isDragging.current || dragStartX.current === null) return;
 
-  const dx = e.clientX - dragStartX.current;
+    const dx = e.clientX - dragStartX.current;
 
-  isDragging.current = false;
-  dragStartX.current = null;
+    isDragging.current = false;
+    dragStartX.current = null;
 
-  if (Math.abs(dx) < 60) return;
+    if (Math.abs(dx) < 60) return;
 
-  try {
-    const AudioCtx =
-      window.AudioContext || window.webkitAudioContext;
+    try {
+      const AudioCtx =
+        window.AudioContext || window.webkitAudioContext;
 
-    if (AudioCtx) {
-      const ctx = new AudioCtx();
+      if (AudioCtx) {
+        const ctx = new AudioCtx();
 
-      if (ctx.state === "suspended") {
-        await ctx.resume();
+        if (ctx.state === "suspended") {
+          await ctx.resume();
+        }
+
+        ctx.close();
       }
+    } catch (_) { }
 
-      ctx.close();
+    playReelClick();
+    reelSpinSignal.active = true;
+
+    if (dx < 0) {
+      goNext();
+    } else {
+      goPrev();
     }
-  } catch (_) {}
+  };
 
-  playReelClick();
-  reelSpinSignal.active = true;
-
-  if (dx < 0) {
-    goNext();
-  } else {
-    goPrev();
-  }
-};
-
-const onMouseLeave = () => {
-  isDragging.current = false;
-  dragStartX.current = null;
-};
+  const onMouseLeave = () => {
+    isDragging.current = false;
+    dragStartX.current = null;
+  };
 
   return (
     <section
       ref={containerRef}
       className="w-full bg-transparent overflow-hidden"
       style={{ isolation: "isolate" }}
-        onTouchStart={onTouchStart}
-        onTouchEnd={onTouchEnd}
-        onMouseDown={onMouseDown}
-        onMouseUp={onMouseUp}
-        onMouseLeave={onMouseLeave}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+      onMouseDown={onMouseDown}
+      onMouseUp={onMouseUp}
+      onMouseLeave={onMouseLeave}
     >
       <div className="flex flex-col items-center justify-center text-center px-4 pt-16 sm:pt-20 md:pt-24 pb-8 sm:pb-10 md:pb-12 relative z-20">
 
@@ -531,13 +556,13 @@ const onMouseLeave = () => {
 
       </div>
 
-        <div className="stack-wrapper relative w-full bg-transparent
+      <div className="stack-wrapper relative w-full bg-transparent
           min-h-[700px]
           sm:min-h-[740px]
           md:min-h-[720px]
           lg:min-h-[760px]
           xl:min-h-[780px]
-        overflow-hidden">        
+        overflow-hidden">
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
           <Canvas camera={{ position: [0, 0, 6], fov: 50 }}>
             <ProjectorScene />
@@ -560,48 +585,51 @@ const onMouseLeave = () => {
                 backfaceVisibility: "hidden",
               }}
             >
-              <div className="card-shell overflow-hidden rounded-2xl sm:rounded-[2rem] border border-[var(--color-accent)]/30 bg-white shadow-[0_0_60px_rgba(168,85,247,0.14)] sm:shadow-[0_0_80px_rgba(168,85,247,0.15)] relative">
-                <div
-                  className="relative overflow-hidden"
-                  style={{ height: "clamp(180px, 42vw, 300px)" }}
-                >
-                  <div
-                    className="absolute inset-0 scale-105"
-                    style={{
-                      backgroundImage: `linear-gradient(to bottom, transparent 50%, rgba(255,255,255,0.8) 100%), url(${item.bg})`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                    }}
+              <div 
+                onClick={() => setIsDetailsExpanded(prev => !prev)}
+                className="card-shell group cursor-pointer overflow-hidden rounded-2xl sm:rounded-[2rem] border border-[#c9a84c]/20 bg-[#12110e] shadow-[0_15px_40px_rgba(201,168,76,0.15)] relative w-full h-[400px] sm:h-[440px] md:h-[460px] lg:h-[480px]"
+              >
+                {/* Whole Card Background Image */}
+                <div className="absolute inset-0 z-0">
+                  <img
+                    src={item.bg}
+                    alt={item.title}
+                    className={`w-full h-full object-cover transition-transform duration-[1.2s] ease-out ${isDetailsExpanded ? 'scale-110' : 'group-hover:scale-110'}`}
                   />
-
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.15)_0%,rgba(255,255,255,0.4)_100%)]" />
+                  {/* Subtle dark overlay that is 0% opacity by default, and fades in ONLY on hover/expanded */}
+                  <div className={`absolute inset-0 bg-black/40 transition-opacity duration-700 z-0 pointer-events-none ${isDetailsExpanded ? 'opacity-100' : 'opacity-0 lg:group-hover:opacity-100'}`} />
                 </div>
 
-                <div className="card-content bg-transparent p-5 sm:p-6 md:p-8">
-                  <div className="flex flex-col gap-5 sm:gap-6">
-                    <div>
-                      <p className="text-[9px] sm:text-xs uppercase tracking-[0.22em] sm:tracking-[0.3em] text-[var(--color-accent)] mb-3 font-bold">
+                {/* Details Panel (Slides up from the bottom on hover/expanded) */}
+                <div className={`card-content absolute bottom-0 left-0 right-0 p-5 sm:p-6 md:p-8 bg-black/70 backdrop-blur-md border-t border-[#c9a84c]/25 transition-all duration-700 ease-out z-10 flex flex-col justify-end ${isDetailsExpanded ? 'translate-y-0' : 'translate-y-full lg:group-hover:translate-y-0'}`}>
+                  <div className="flex flex-col gap-4 sm:gap-5">
+                    {/* Header Part */}
+                    <div className="flex flex-col justify-end">
+                      <p className="text-[9px] sm:text-xs uppercase tracking-[0.22em] sm:tracking-[0.3em] text-[#c9a84c] mb-1 sm:mb-2 font-bold">
                         {item.level}
                       </p>
 
                       <h2
-                        className="font-black text-[var(--color-primary)] leading-tight mb-4"
-                        style={{ fontSize: "clamp(24px, 7vw, 42px)" }}
+                        className="font-black text-white leading-tight"
+                        style={{ fontSize: "clamp(20px, 5vw, 32px)" }}
                       >
                         {item.title}
                       </h2>
-
-                      <div className="w-12 h-[2px] bg-[var(--color-accent)] mb-4" />
-
-                      <p className="text-[#64748B] sm:text-[#94A3B8] text-sm leading-relaxed max-w-xl">
-                        {item.description}
-                      </p>
                     </div>
 
-                    <div className="flex flex-wrap gap-x-5 sm:gap-x-8 gap-y-4 pt-4 border-t border-gray-200">
-                      <MetaItem label="Institution" value={item.school} />
-                      <MetaItem label="Year" value={item.year} />
-                      <MetaItem label={item.meta.label} value={item.meta.value} />
+                    {/* Expandable Part */}
+                    <div className="flex flex-col gap-4 sm:gap-5">
+                      <div className="w-12 h-[2px] bg-[#c9a84c]" />
+
+                      <p className="text-[#d1c4af] text-sm leading-relaxed max-w-xl">
+                        {item.description}
+                      </p>
+
+                      <div className="flex flex-wrap gap-x-5 sm:gap-x-8 gap-y-4 pt-4 border-t border-[#c9a84c]/20">
+                        <MetaItem label="Institution" value={item.school} />
+                        <MetaItem label="Year" value={item.year} />
+                        <MetaItem label={item.meta.label} value={item.meta.value} />
+                      </div>
                     </div>
                   </div>
                 </div>

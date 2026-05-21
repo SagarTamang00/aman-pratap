@@ -5,8 +5,9 @@ import ScrollToTop from './components/ScrollToTop'
 import Loader from './components/Loader'
 
 import Hero from './pages/Hero'
-import Awards from './pages/Award'
+import Work from './pages/Work'
 import Project from './pages/Project'
+import ReelsStudio from './pages/ReelsStudio'
 import About from './pages/About'
 import Academic from './pages/Academic'
 import Footer from './components/Footer'
@@ -18,10 +19,10 @@ const Home = () => {
 
   return (
     <>
-    <Loader onComplete={() => setLoaderDone(true)} />
-    <Hero videoSrc="/intro.mp4" canPlay={loaderDone} />
-      <Awards />
+      <Loader onComplete={() => setLoaderDone(true)} />
+      <Hero videoSrc="/intro.mp4" canPlay={loaderDone} />
       <Project />
+      <ReelsStudio />
       <Footer />
     </>
   )
@@ -30,6 +31,7 @@ const Home = () => {
 const AboutPage = () => (
   <>
     <About />
+    <Work />
     <Academic />
   </>
 )
@@ -40,9 +42,9 @@ const App = () => (
     <Navbar />
     <main>
       <Routes>
-        <Route path="/"        element={<Home />} />
-        <Route path="/about"   element={<AboutPage />} />
-        <Route path="/news"    element={<News />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/news" element={<News />} />
         <Route path="/contact" element={<Contact />} />
       </Routes>
     </main>

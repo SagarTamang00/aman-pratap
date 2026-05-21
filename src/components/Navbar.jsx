@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 const NAV_LINKS = [
-  { label: "Home",        path: "/"        },
-  { label: "About Me",    path: "/about"   },
-  { label: "News & Blogs",path: "/news"    },
-  { label: "Contact Me",  path: "/contact" },
+  { label: "Home", path: "/" },
+  { label: "About Me", path: "/about" },
+  { label: "News & Blogs", path: "/news" },
+  { label: "Contact Me", path: "/contact" },
 ];
 
 const Navbar = () => {
-  const [scrolled, setScrolled]               = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
 
@@ -27,49 +27,48 @@ const Navbar = () => {
   useEffect(() => { setIsMobileMenuOpen(false); }, [location]);
 
   /* ── colour tokens for scrolled vs transparent state ── */
-  const scrolledBg     = "rgba(6, 10, 22, 0.92)";   /* deep navy, matches mobile menu */
+  const scrolledBg = "rgba(6, 10, 22, 0.92)";   /* deep navy, matches mobile menu */
   const scrolledBorder = "rgba(192, 132, 252, 0.15)"; /* faint accent line */
-  const linkColor      = scrolled
+  const linkColor = scrolled
     ? "rgba(255,255,255,0.85)"           /* bright on dark bg */
     : "var(--color-heading)";
-  const activeLinkColor = "var(--color-navy)";
+  const activeLinkColor = "var(--color-dark-yellow)";
 
   return (
     <>
       {/* HEADER */}
       <header
-        className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${
-          scrolled ? "py-4 shadow-[0_4px_24px_rgba(0,0,0,0.45)]" : "py-7 shadow-none bg-transparent"
-        }`}
+        className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${scrolled ? "py-4 shadow-[0_4px_24px_rgba(0,0,0,0.45)]" : "py-7 shadow-none bg-transparent"
+          }`}
         style={
           scrolled
             ? {
-                background: scrolledBg,
-                borderBottom: `1px solid ${scrolledBorder}`,
-                backdropFilter: "blur(14px)",
-                WebkitBackdropFilter: "blur(14px)",
-              }
+              background: scrolledBg,
+              borderBottom: `1px solid ${scrolledBorder}`,
+              backdropFilter: "blur(14px)",
+              WebkitBackdropFilter: "blur(14px)",
+            }
             : {}
         }
       >
         <div className="max-w-7xl mx-auto px-8 lg:px-16 flex items-center justify-between">
 
           {/* LOGO */}
-            <Link
-              to="/"
-              className="text-3xl lg:text-4xl font-black tracking-tight"
-              style={{ color: scrolled ? "#fff" : "var(--color-span)" }}
+          <Link
+            to="/"
+            className="text-3xl lg:text-4xl font-black tracking-tight"
+            style={{ color: scrolled ? "#fff" : "var(--color-span)" }}
+          >
+            Don
+            <span
+              style={{
+                color: "var(--color-dark-yellow)",
+                marginLeft: "6px" // adjust gap here
+              }}
             >
-              Don
-              <span 
-                style={{ 
-                  color: "var(--color-accent)",
-                  marginLeft: "6px" // adjust gap here
-                }}
-              >
-                Director
-              </span>
-            </Link>
+              Director
+            </span>
+          </Link>
 
           {/* DESKTOP NAV */}
           <nav className="hidden md:flex items-center gap-10 lg:gap-14">
@@ -86,9 +85,8 @@ const Navbar = () => {
 
                   {/* underline */}
                   <span
-                    className={`absolute -bottom-1 left-0 h-0.5 rounded-full transition-all duration-300 ${
-                      isActive ? "w-full" : "w-0 group-hover:w-full"
-                    }`}
+                    className={`absolute -bottom-1 left-0 h-0.5 rounded-full transition-all duration-300 ${isActive ? "w-full" : "w-0 group-hover:w-full"
+                      }`}
                     style={{ backgroundColor: "var(--color-accent-light)" }}
                   />
                 </Link>
@@ -103,9 +101,9 @@ const Navbar = () => {
             aria-label="Toggle menu"
           >
             {[
-              isMobileMenuOpen ? "rotate-45 translate-y-2"  : "",
-              isMobileMenuOpen ? "opacity-0"                : "opacity-100",
-              isMobileMenuOpen ? "-rotate-45 -translate-y-2": "",
+              isMobileMenuOpen ? "rotate-45 translate-y-2" : "",
+              isMobileMenuOpen ? "opacity-0" : "opacity-100",
+              isMobileMenuOpen ? "-rotate-45 -translate-y-2" : "",
             ].map((cls, i) => (
               <span
                 key={i}
@@ -119,9 +117,8 @@ const Navbar = () => {
 
       {/* MOBILE MENU */}
       <div
-        className={`fixed inset-0 z-40 flex flex-col items-center justify-center transition-all duration-500 ${
-          isMobileMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
+        className={`fixed inset-0 z-40 flex flex-col items-center justify-center transition-all duration-500 ${isMobileMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+          }`}
         style={{ backgroundColor: "var(--color-navy)" }}
       >
         <nav className="flex flex-col items-center gap-8">

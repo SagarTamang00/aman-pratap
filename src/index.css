@@ -14,9 +14,10 @@
 
   /* Gold accents */
   --color-primary: #8b6d5c;
-  --color-accent: #4f4532;  
+  --color-accent: #4f4532;
   --color-accent-light: #f4e2a3;
   --color-navy: #c9a84c;
+  --color-dark-yellow: #fed42d;
 
   /* Legacy variables */
   --text: #4f4532;
@@ -26,22 +27,23 @@
   --code-bg: rgba(79, 69, 50, 0.05);
 
   --accent: #c9a84c;
-  --accent-bg: rgba(201,168,76,0.12);
-  --accent-border: rgba(201,168,76,0.35);
+  --accent-bg: rgba(201, 168, 76, 0.12);
+  --accent-border: rgba(201, 168, 76, 0.35);
 
-  --social-bg: rgba(255,255,255,0.05);
+  --social-bg: rgba(255, 255, 255, 0.05);
 
   --shadow:
-    rgba(201,168,76,0.08) 0 10px 15px -3px,
-    rgba(201,168,76,0.05) 0 4px 6px -2px;
+    rgba(201, 168, 76, 0.08) 0 10px 15px -3px,
+    rgba(201, 168, 76, 0.05) 0 4px 6px -2px;
 
---sans: 'Nunito', system-ui, 'Segoe UI', Roboto, sans-serif;
---heading: 'Nunito', system-ui, 'Segoe UI', Roboto, sans-serif;
---mono: 'Nunito', ui-monospace, Consolas, monospace;
+  --sans: 'Nunito', system-ui, 'Segoe UI', Roboto, sans-serif;
+  --heading: 'Nunito', system-ui, 'Segoe UI', Roboto, sans-serif;
+  --mono: 'Nunito', ui-monospace, Consolas, monospace;
 }
 
 
-html, body {
+html,
+body {
   /* Firefox */
   scrollbar-width: thin;
   scrollbar-color: #c9a84c #1e1c15;
@@ -50,19 +52,23 @@ html, body {
 /* Chrome / Safari / Edge */
 ::-webkit-scrollbar {
   width: 6px;
-  height: 6px; /* for horizontal scrollbars */
+  height: 6px;
+  /* for horizontal scrollbars */
 }
+
 ::-webkit-scrollbar-track {
-  background: transparent
-  border-radius: 99px;
+  background: transparent border-radius: 99px;
 }
+
 ::-webkit-scrollbar-thumb {
   background: #c9a84c;
   border-radius: 99px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: #e0bf6a;
 }
+
 ::-webkit-scrollbar-thumb:active {
   background: #a8862f;
 }
@@ -75,12 +81,13 @@ body {
   color: #4f4532;
 }
 
-   /*Acadmic Page*/
-   .stack-wrapper canvas {
+/*Acadmic Page*/
+.stack-wrapper canvas {
   width: 100% !important;
   height: 100% !important;
   display: block;
 }
+
 @media (max-width: 768px) {
   .stack-wrapper {
     min-height: 680px !important;
