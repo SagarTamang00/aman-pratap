@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { Tv, Clock, Sparkles, Film, Globe, Briefcase } from "lucide-react";
+import { Tv, Clock, Sparkles, Film, Globe, Briefcase, Play } from "lucide-react";
 
 const workData = [
-
   {
     role: "Director",
     company: "WorldLink Communications",
@@ -84,7 +83,7 @@ const workData = [
     duration: "3 Month",
   },
   {
-    role: "Executive Producer/ Director",
+    role: "Executive Producer / Director",
     company: "Himalaya Television",
     project: "Himalayan Roadies",
     preview: "/Work/himal.jpg",
@@ -93,7 +92,6 @@ const workData = [
     endDate: "2020",
     duration: "4 Months",
   },
-
   {
     role: "Director / Executive Producer",
     company: "Himalayan Tv",
@@ -105,7 +103,7 @@ const workData = [
     duration: "7 Month",
   },
   {
-    role: "Presenter/ Analyst",
+    role: "Presenter / Analyst",
     company: "Kantipur TV HD",
     project: "2018 World Cup Special Program",
     preview: "/Work/kantipur.jpg",
@@ -115,7 +113,7 @@ const workData = [
     duration: "1 Month",
   },
   {
-    role: "Executive Producer/ Director",
+    role: "Executive Producer / Director",
     company: "Himalaya Television",
     project: "Himalayan Roadies",
     preview: "/Work/himal.jpg",
@@ -157,263 +155,416 @@ const workData = [
   },
 ];
 
-const Counter = ({ target, isVisible, suffix = "" }) => {
+const Counter = ({ target, isVisible }) => {
   const [count, setCount] = useState(0);
-
   useEffect(() => {
-    if (!isVisible) {
-      setCount(0);
-      return;
-    }
-
-    const duration = 1200;
-    const startTime = performance.now();
-
-    const updateCount = (now) => {
-      const elapsed = now - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const easeProgress = 1 - Math.pow(1 - progress, 3);
-      const current = Math.floor(easeProgress * target);
-      setCount(current);
-
-      if (progress < 1) {
-        requestAnimationFrame(updateCount);
-      } else {
-        setCount(target);
-      }
+    if (!isVisible) { setCount(0); return; }
+    const start = performance.now();
+    const tick = (now) => {
+      const p = Math.min((now - start) / 1200, 1);
+      const e = 1 - Math.pow(1 - p, 3);
+      setCount(Math.floor(e * target));
+      if (p < 1) requestAnimationFrame(tick);
+      else setCount(target);
     };
-
-    requestAnimationFrame(updateCount);
+    requestAnimationFrame(tick);
   }, [isVisible, target]);
+  return <>{String(count).padStart(2, "0")}</>;
+};
 
-  return <>{String(count).padStart(2, "0")}{suffix}</>;
+const getIcon = (item, size = 12) => {
+  const t = (item.company + item.badge).toLowerCase();
+  if (t.includes("worldlink")) return <Globe size={size} strokeWidth={1.8} />;
+  if (t.includes("motion") || t.includes("unplugged") || t.includes("idol"))
+    return <Film size={size} strokeWidth={1.8} />;
+  if (t.includes("tv") || t.includes("television") || t.includes("station"))
+    return <Tv size={size} strokeWidth={1.8} />;
+  return <Briefcase size={size} strokeWidth={1.8} />;
 };
 
 const Work = () => {
-  const [activeIndex, setActiveIndex] = useState(null);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
+  const [prevIndex, setPrevIndex] = useState(0);
+  const [transitioning, setTransitioning] = useState(false);
   const sectionRef = useRef(null);
+  const listRef = useRef(null);
+
+  const active = workData[activeIndex];
+  const prev = workData[prevIndex];
 
   useEffect(() => {
     const node = sectionRef.current;
     if (!node) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        }
-      },
-      { threshold: 0.1 }
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) setIsVisible(true); },
+      { threshold: 0.05 }
     );
-    observer.observe(node);
-    return () => observer.unobserve(node);
+    obs.observe(node);
+    return () => obs.unobserve(node);
   }, []);
+
+  const handleHover = (i) => {
+    if (i === activeIndex) return;
+    setPrevIndex(activeIndex);
+    setTransitioning(true);
+    setTimeout(() => {
+      setActiveIndex(i);
+      setTransitioning(false);
+    }, 220);
+  };
 
   return (
     <section
       ref={sectionRef}
       id="work"
-      className="relative overflow-hidden pt-12 pb-32 md:py-32 px-6 bg-[var(--color-bg-section)]"
+      style={{
+        position: "relative",
+        overflow: "hidden",
+        padding: "80px 24px 100px",
+        background: "var(--color-bg-section)",
+      }}
     >
-      {/* Ambient glow */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{ background: "radial-gradient(circle at top left, rgba(201,168,76,0.12), transparent 40%)" }}
-      />
+      {/* Top seam */}
+      <div style={{
+        position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)",
+        width: "min(92%,1400px)", height: "1px",
+        background: "linear-gradient(to right,transparent,rgba(201,168,76,0.35),transparent)",
+        pointerEvents: "none",
+      }} />
 
-      {/* Top / bottom seam lines */}
-      <div
-        className="absolute top-0 left-1/2 -translate-x-1/2 h-px pointer-events-none"
-        style={{ width: "min(92%, 1400px)", background: "linear-gradient(to right, transparent, rgba(201,168,76,0.4), transparent)" }}
-      />
-      <div
-        className="absolute bottom-0 left-1/2 -translate-x-1/2 h-px pointer-events-none"
-        style={{ width: "min(92%, 1400px)", background: "linear-gradient(to right, transparent, rgba(201,168,76,0.4), transparent)" }}
-      />
-
-      {/* Container */}
-      <div className="relative z-10 max-w-[1200px] mx-auto">
+      <div style={{ position: "relative", zIndex: 10, maxWidth: "1200px", margin: "0 auto" }}>
 
         {/* ── Header ── */}
-        <div
-          className="mb-16 transition-all duration-[900ms] ease-out"
-          style={{
-            opacity: isVisible ? 1 : 0,
-            transform: isVisible ? "translateY(0)" : "translateY(30px)",
-          }}
-        >
-          {/* Eyebrow */}
-          <div className="inline-flex items-center gap-3 mb-6">
-            <div className="w-12 h-px bg-[var(--color-navy)]" />
-            <Sparkles size={14} color="var(--color-navy)" strokeWidth={1.5} />
-            <span className="text-[0.75rem] uppercase tracking-[0.22em] font-extrabold text-[var(--color-heading)]">
-              Timeline
-            </span>
-          </div>
-
-          {/* Title row */}
-          <div className="flex justify-between items-end gap-8 flex-wrap">
-            <h2
-              className="m-0 font-black leading-[0.95] tracking-[-0.05em] text-[var(--color-heading)]"
-              style={{ fontSize: "clamp(3rem, 7vw, 5.5rem)" }}
-            >
+        <div style={{
+          display: "flex",
+          alignItems: "flex-end",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: "20px",
+          marginBottom: "48px",
+          opacity: isVisible ? 1 : 0,
+          transform: isVisible ? "translateY(0)" : "translateY(20px)",
+          transition: "opacity 0.7s ease, transform 0.7s ease",
+        }}>
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}>
+              <Sparkles size={12} color="var(--color-navy)" strokeWidth={1.5} />
+              <span style={{ fontSize: "0.68rem", fontWeight: 800, letterSpacing: "0.22em", textTransform: "uppercase", color: "var(--color-heading)" }}>
+                Career Timeline
+              </span>
+              <div style={{ width: "36px", height: "1px", background: "var(--color-navy)" }} />
+            </div>
+            <h2 style={{
+              margin: 0,
+              fontSize: "clamp(3.5rem, 8vw, 6.5rem)",
+              fontWeight: 900,
+              letterSpacing: "-0.055em",
+              lineHeight: 0.88,
+              color: "var(--color-heading)",
+            }}>
               Work
             </h2>
+          </div>
 
-            {/* Stats pill */}
-            <div className="flex items-center gap-6 px-5 py-4 rounded-full bg-white/20 border border-[rgba(79,69,50,0.08)] backdrop-blur-md w-full sm:w-auto justify-center sm:justify-start">
-              <div className="flex flex-col gap-1">
-                <span className="text-[1.8rem] font-black leading-none text-[var(--color-navy)]">
-                  <Counter target={workData.length} isVisible={isVisible} />
-                </span>
-                <span className="text-[0.72rem] uppercase tracking-[0.14em] font-bold text-[rgba(79,69,50,0.7)]">
-                  / {String(workData.length).padStart(2, "0")} Roles
+          <div style={{ display: "flex", gap: "20px", paddingBottom: "4px" }}>
+            {[
+              { val: <Counter target={workData.length} isVisible={isVisible} />, lbl: "Roles" },
+              { val: "28+", lbl: "Years" },
+            ].map(({ val, lbl }) => (
+              <div key={lbl} style={{
+                display: "flex", flexDirection: "column", alignItems: "center",
+                padding: "14px 24px",
+                borderRadius: "100px",
+                border: "1px solid rgba(79,69,50,0.1)",
+                background: "rgba(255,255,255,0.15)",
+              }}>
+                <span style={{ fontSize: "1.7rem", fontWeight: 900, lineHeight: 1, color: "var(--color-navy)" }}>{val}</span>
+                <span style={{ fontSize: "0.62rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.16em", color: "rgba(79,69,50,0.5)", marginTop: "3px" }}>{lbl}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Split layout ── */}
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "32px",
+          alignItems: "start",
+          opacity: isVisible ? 1 : 0,
+          transition: "opacity 0.8s ease 0.2s",
+        }}>
+
+          {/* LEFT — Sticky feature panel */}
+          <div style={{ position: "sticky", top: "40px" }}>
+            {/* Image frame */}
+            <div style={{
+              position: "relative",
+              width: "100%",
+              paddingBottom: "110%",
+              borderRadius: "24px",
+              overflow: "hidden",
+              background: "var(--color-navy)",
+            }}>
+              {/* BG image — fades between entries */}
+              <div style={{
+                position: "absolute", inset: 0,
+                opacity: transitioning ? 0 : 1,
+                transition: "opacity 0.22s ease",
+              }}>
+                {active.preview ? (
+                  <img
+                    src={active.preview}
+                    alt={active.company}
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  />
+                ) : (
+                  <div style={{
+                    width: "100%", height: "100%",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    background: "linear-gradient(135deg, #1e1a14, #2e2720)",
+                    color: "#c9a84c",
+                    fontSize: "3rem", fontWeight: 900, letterSpacing: "0.1em",
+                  }}>
+                    {active.companyInitials}
+                  </div>
+                )}
+              </div>
+
+              {/* Dark cinematic overlay */}
+              <div style={{
+                position: "absolute", inset: 0,
+                background: "linear-gradient(to top, rgba(15,12,8,0.92) 0%, rgba(15,12,8,0.45) 45%, rgba(15,12,8,0.1) 100%)",
+              }} />
+
+              {/* Top-left index badge */}
+              <div style={{
+                position: "absolute", top: "20px", left: "20px",
+                display: "flex", alignItems: "center", gap: "8px",
+              }}>
+                <span style={{
+                  fontSize: "0.65rem", fontWeight: 900,
+                  letterSpacing: "0.2em", textTransform: "uppercase",
+                  color: "rgba(255,255,255,0.5)",
+                  fontVariantNumeric: "tabular-nums",
+                }}>
+                  {String(activeIndex + 1).padStart(2, "0")} / {String(workData.length).padStart(2, "0")}
                 </span>
               </div>
-              <div className="w-px h-10 bg-[rgba(79,69,50,0.1)]" />
-              <div className="flex flex-col gap-1">
-                <span className="text-[1.8rem] font-black leading-none text-[var(--color-heading)]">
-                  28+
-                </span>
-                <span className="text-[0.72rem] uppercase tracking-[0.14em] font-bold text-[rgba(79,69,50,0.7)]">
-                  Years Exp
-                </span>
+
+              {/* Top-right: badge */}
+              <div style={{
+                position: "absolute", top: "20px", right: "20px",
+                display: "inline-flex", alignItems: "center", gap: "6px",
+                padding: "5px 12px", borderRadius: "100px",
+                background: "rgba(255,255,255,0.12)",
+                backdropFilter: "blur(8px)",
+                border: "1px solid rgba(255,255,255,0.15)",
+                color: "#fff",
+                fontSize: "0.62rem", fontWeight: 800,
+                textTransform: "uppercase", letterSpacing: "0.14em",
+                opacity: transitioning ? 0 : 1,
+                transition: "opacity 0.22s ease",
+              }}>
+                {getIcon(active, 10)}
+                {active.badge}
+              </div>
+
+              {/* Bottom content */}
+              <div style={{
+                position: "absolute", bottom: 0, left: 0, right: 0,
+                padding: "32px 28px",
+                opacity: transitioning ? 0 : 1,
+                transform: transitioning ? "translateY(8px)" : "translateY(0)",
+                transition: "opacity 0.22s ease, transform 0.22s ease",
+              }}>
+                {/* Project chip */}
+                {active.project && (
+                  <div style={{
+                    display: "inline-flex", alignItems: "center", gap: "6px",
+                    marginBottom: "12px",
+                    padding: "4px 11px", borderRadius: "4px",
+                    background: "rgba(201,168,76,0.25)",
+                    border: "1px solid rgba(201,168,76,0.35)",
+                    fontSize: "0.62rem", fontWeight: 800,
+                    textTransform: "uppercase", letterSpacing: "0.12em",
+                    color: "#e8c96e",
+                  }}>
+                    <Play size={9} strokeWidth={2.5} fill="#e8c96e" />
+                    {active.project}
+                  </div>
+                )}
+
+                <h3 style={{
+                  margin: "0 0 4px 0",
+                  fontSize: "clamp(1.3rem, 2.5vw, 1.9rem)",
+                  fontWeight: 900, lineHeight: 1.1,
+                  letterSpacing: "-0.03em",
+                  color: "#fff",
+                }}>
+                  {active.role}
+                </h3>
+
+                <p style={{
+                  margin: "0 0 20px 0",
+                  fontSize: "0.82rem", fontWeight: 600,
+                  color: "rgba(255,255,255,0.55)",
+                  textTransform: "uppercase", letterSpacing: "0.08em",
+                }}>
+                  {active.company}
+                </p>
+
+                {/* Date strip */}
+                <div style={{
+                  display: "flex", gap: "20px",
+                  paddingTop: "16px",
+                  borderTop: "1px solid rgba(255,255,255,0.1)",
+                }}>
+                  {[
+                    { lbl: "From", val: active.startDate },
+                    { lbl: "Until", val: active.endDate },
+                    { lbl: "Duration", val: active.duration },
+                  ].map(({ lbl, val }) => (
+                    <div key={lbl}>
+                      <div style={{ fontSize: "0.55rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.18em", color: "rgba(255,255,255,0.35)", marginBottom: "2px" }}>{lbl}</div>
+                      <div style={{ fontSize: "0.78rem", fontWeight: 800, color: "rgba(255,255,255,0.85)" }}>{val}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Expanding rule */}
-          <div
-            className="mt-8 h-px transition-[width] duration-[1200ms] ease-out"
-            style={{
-              width: isVisible ? "100%" : "0%",
-              background: "linear-gradient(to right, var(--color-navy), rgba(79,69,50,0.08))",
-            }}
-          />
-        </div>
+          {/* RIGHT — Scrollable list */}
+          <div ref={listRef} style={{ display: "flex", flexDirection: "column" }}>
+            {workData.map((item, i) => {
+              const isActive = activeIndex === i;
+              const delay = i * 0.035;
 
-        {/* ── Work rows ── */}
-        <ul className="flex flex-col gap-5 m-0 p-0 list-none">
-          {workData.map((item, i) => {
-            const isActive = activeIndex === i;
-
-            return (
-              <li
-                key={`${item.company}-${item.role}-${i}`}
-                className="relative overflow-hidden rounded-[2rem] border bg-white/20 backdrop-blur-md cursor-default transition-[border-color,box-shadow,transform] duration-[450ms] ease-out"
-                style={{
-                  borderColor: isActive ? "rgba(201,168,76,0.35)" : "rgba(79,69,50,0.08)",
-                  boxShadow: isActive ? "0 12px 30px rgba(79,69,50,0.08), 0 2px 10px rgba(201,168,76,0.08)" : "none",
-                  transform: isActive ? "translateY(-4px)" : isVisible ? "translateY(0)" : "translateY(20px)",
-                  opacity: isVisible ? 1 : 0,
-                  transition: `opacity 0.6s ease ${i * 0.06}s, transform 0.6s ease ${i * 0.06}s, border-color 0.45s ease, box-shadow 0.45s ease`,
-                }}
-                onMouseEnter={() => setActiveIndex(i)}
-                onMouseLeave={() => setActiveIndex(null)}
-              >
-                {/* Hover gradient fill */}
+              return (
                 <div
-                  className="absolute inset-0 pointer-events-none transition-opacity duration-[400ms]"
+                  key={`${item.company}-${i}`}
+                  onMouseEnter={() => handleHover(i)}
                   style={{
-                    opacity: isActive ? 1 : 0,
-                    background: "linear-gradient(135deg, rgba(201,168,76,0.08), transparent)",
+                    position: "relative",
+                    cursor: "default",
+                    opacity: isVisible ? 1 : 0,
+                    transform: isVisible ? "translateX(0)" : "translateX(20px)",
+                    transition: `opacity 0.5s ease ${delay}s, transform 0.5s ease ${delay}s`,
                   }}
-                />
+                >
+                  {/* Separator */}
+                  {i > 0 && (
+                    <div style={{ height: "1px", background: isActive ? "rgba(201,168,76,0.2)" : "rgba(79,69,50,0.08)", transition: "background 0.3s ease" }} />
+                  )}
 
-                {/* Left accent bar */}
-                <div
-                  className="absolute left-0 top-1/2 w-1 rounded-full pointer-events-none transition-[opacity,transform] duration-[450ms]"
-                  style={{
-                    height: "70%",
-                    background: "linear-gradient(to bottom, var(--color-navy), var(--color-primary))",
-                    opacity: isActive ? 1 : 0,
-                    transform: `translateY(-50%) scaleY(${isActive ? 1 : 0.4})`,
-                  }}
-                />
+                  <div style={{
+                    display: "grid",
+                    gridTemplateColumns: "44px 1fr auto",
+                    gap: "0 16px",
+                    alignItems: "center",
+                    padding: "16px 12px",
+                    borderRadius: "12px",
+                    background: isActive
+                      ? "linear-gradient(90deg, rgba(201,168,76,0.08), rgba(201,168,76,0.02))"
+                      : "transparent",
+                    transition: "background 0.35s ease",
+                  }}>
 
-                {/* Row Grid Layout - Fixed grid on desktop to ensure perfect vertical alignment, zero zigzag */}
-                <div className="relative z-10 grid grid-cols-1 md:grid-cols-[96px_280px_1fr_220px] items-start md:items-center gap-6 p-6 md:p-8">
+                    {/* Thumbnail */}
+                    <div style={{
+                      width: "44px", height: "44px",
+                      borderRadius: "10px",
+                      overflow: "hidden",
+                      border: isActive ? "2px solid rgba(201,168,76,0.5)" : "1px solid rgba(79,69,50,0.1)",
+                      flexShrink: 0,
+                      transition: "border 0.3s ease, transform 0.3s ease",
+                      transform: isActive ? "scale(1.06)" : "scale(1)",
+                    }}>
+                      {item.preview ? (
+                        <img src={item.preview} alt={item.company} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      ) : (
+                        <div style={{
+                          width: "100%", height: "100%",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          background: "var(--color-navy)", color: "#c9a84c",
+                          fontSize: "0.55rem", fontWeight: 900,
+                        }}>{item.companyInitials}</div>
+                      )}
+                    </div>
 
-                  {/* Column 1: Viewfinder Logo Container */}
-                  <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-2xl overflow-hidden shrink-0 flex items-center justify-center border border-[rgba(79,69,50,0.12)] bg-white/40 shadow-sm relative group">
-                    {item.preview ? (
-                      <img
-                        src={item.preview}
-                        alt={item.company}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#2e2a22] to-[#1e1c17] text-[#c9a84c]">
-                        {/* Viewfinder crosshairs representing the 'X' inside square */}
-                        <svg className="absolute inset-0 w-full h-full opacity-35 stroke-current" strokeWidth="0.75" fill="none">
-                          <line x1="0" y1="0" x2="100%" y2="100%" />
-                          <line x1="100%" y1="0" x2="0" y2="100%" />
-                          <circle cx="50%" cy="50%" r="20%" strokeDasharray="3,3" />
-                        </svg>
-                        <span className="relative z-10 text-[0.8rem] tracking-[0.2em] font-extrabold uppercase opacity-85">{item.companyInitials}</span>
+                    {/* Text */}
+                    <div>
+                      <div style={{
+                        fontSize: "0.95rem", fontWeight: 800,
+                        letterSpacing: "-0.02em",
+                        color: isActive ? "var(--color-heading)" : "rgba(79,69,50,0.7)",
+                        lineHeight: 1.2,
+                        transition: "color 0.3s ease",
+                      }}>
+                        {item.role}
                       </div>
-                    )}
-                  </div>
+                      <div style={{
+                        fontSize: "0.7rem", fontWeight: 600,
+                        textTransform: "uppercase", letterSpacing: "0.07em",
+                        color: isActive ? "rgba(79,69,50,0.55)" : "rgba(79,69,50,0.35)",
+                        marginTop: "2px",
+                        transition: "color 0.3s ease",
+                      }}>
+                        {item.company}
+                      </div>
+                    </div>
 
-                  {/* Column 2: Pill Badge */}
-                  <div className="flex items-center justify-start w-full">
-                    <span className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[0.7rem] font-extrabold uppercase tracking-[0.14em] whitespace-nowrap border transition-all duration-[450ms] ${isActive
-                      ? "bg-[var(--color-navy)] text-white border-transparent"
-                      : "bg-white/50 border-[rgba(79,69,50,0.12)] text-[var(--color-heading)]"
-                      }`}>
-                      {(() => {
-                        const iconClass = isActive ? "text-white" : "text-[#c9a84c]";
-                        const iconSize = 11;
-                        const text = (item.company + " " + item.badge).toLowerCase();
-
-                        if (text.includes("worldlink")) {
-                          return <Globe size={iconSize} strokeWidth={2.5} className={iconClass} />;
-                        }
-                        if (text.includes("motion pictures") || text.includes("unplugged") || text.includes("kripa") || text.includes("idol")) {
-                          return <Film size={iconSize} strokeWidth={2.5} className={iconClass} />;
-                        }
-                        if (text.includes("tv") || text.includes("television") || text.includes("station")) {
-                          return <Tv size={iconSize} strokeWidth={2.5} className={iconClass} />;
-                        }
-                        return <Briefcase size={iconSize} strokeWidth={2.5} className={iconClass} />;
-                      })()}
-                      {item.badge}
-                    </span>
-                  </div>
-
-                  {/* Column 3: Center Group: Title and Description */}
-                  <div className="w-full text-left mt-2 md:mt-0 md:pr-4">
-                    <h3 className="m-0 text-[1.4rem] md:text-[1.65rem] font-black leading-tight tracking-[-0.03em] text-[var(--color-heading)]">
-                      {item.role}
-                    </h3>
-                    <p className="mt-1 mb-0 text-[0.92rem] font-semibold text-[rgba(79,69,50,0.65)] uppercase tracking-[0.06em]">
-                      {item.company}
-                    </p>
-                    {item.project && (
-                      <span className="inline-block mt-2.5 text-[0.72rem] px-3 py-1 rounded bg-[rgba(201,168,76,0.1)] text-[#8b6d5c] font-black uppercase tracking-[0.08em]">
-                        {item.project}
+                    {/* Right: index + duration */}
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px" }}>
+                      <span style={{
+                        fontSize: "0.6rem", fontWeight: 900,
+                        letterSpacing: "0.18em",
+                        color: isActive ? "var(--color-navy)" : "rgba(79,69,50,0.25)",
+                        fontVariantNumeric: "tabular-nums",
+                        transition: "color 0.3s ease",
+                      }}>
+                        {String(i + 1).padStart(2, "0")}
                       </span>
-                    )}
-                  </div>
+                      <span style={{
+                        display: "flex", alignItems: "center", gap: "4px",
+                        fontSize: "0.62rem", fontWeight: 700,
+                        textTransform: "uppercase", letterSpacing: "0.1em",
+                        color: isActive ? "rgba(79,69,50,0.5)" : "rgba(79,69,50,0.25)",
+                        transition: "color 0.3s ease",
+                      }}>
+                        <Clock size={9} strokeWidth={2.5} />
+                        {item.duration}
+                      </span>
+                    </div>
 
-                  {/* Column 4: Right Group: Date Range and Duration */}
-                  <div className="flex flex-col items-start md:items-end text-left md:text-right w-full pt-4 md:pt-0 border-t border-[rgba(79,69,50,0.06)] md:border-0 mt-4 md:mt-0">
-                    <div className="text-[0.88rem] md:text-[0.98rem] font-extrabold tracking-[0.08em] text-[var(--color-heading)] leading-snug">
-                      <div>{item.startDate} —</div>
-                      <div className="md:mt-0.5">{item.endDate}</div>
-                    </div>
-                    <div className="inline-flex items-center gap-1.5 text-[0.75rem] md:text-[0.8rem] uppercase font-black tracking-[0.14em] text-[#8b6d5c] mt-2.5 bg-white/40 px-3 py-1 rounded-full border border-[rgba(79,69,50,0.06)]">
-                      <Clock size={11} strokeWidth={2.5} />
-                      {item.duration}
-                    </div>
+                    {/* Active left pip */}
+                    <div style={{
+                      position: "absolute",
+                      left: 0, top: "20%", bottom: "20%",
+                      width: "3px", borderRadius: "0 2px 2px 0",
+                      background: "linear-gradient(to bottom, var(--color-navy), #c9a84c)",
+                      opacity: isActive ? 1 : 0,
+                      transform: isActive ? "scaleY(1)" : "scaleY(0.3)",
+                      transformOrigin: "center",
+                      transition: "opacity 0.35s ease, transform 0.35s ease",
+                    }} />
                   </div>
                 </div>
-              </li>
-            );
-          })}
-        </ul>
-
+              );
+            })}
+          </div>
+        </div>
       </div>
+
+      {/* Bottom seam */}
+      <div style={{
+        position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
+        width: "min(92%,1400px)", height: "1px",
+        background: "linear-gradient(to right,transparent,rgba(201,168,76,0.35),transparent)",
+        pointerEvents: "none",
+      }} />
     </section>
   );
 };
