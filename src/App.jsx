@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import ScrollToTop from './components/ScrollToTop'
 import Loader from './components/Loader'
+import ClientAdSection from './components/ClientAdSection'
 
 import Hero from './pages/Hero'
 import Work from './pages/Work'
@@ -22,8 +23,11 @@ const Home = () => {
     <>
       <Loader onComplete={() => setLoaderDone(true)} />
       <Hero videoSrc="/intro.mp4" canPlay={loaderDone} />
+      <Work />
+
       <Project />
       <ReelsStudio />
+      <ClientAdSection />
       <Footer />
     </>
   )
@@ -32,7 +36,6 @@ const Home = () => {
 const AboutPage = () => (
   <>
     <About />
-    <Work />
     <Academic />
   </>
 )

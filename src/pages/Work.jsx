@@ -298,7 +298,13 @@ const Work = () => {
           <div ref={previewRef} className="lg:sticky lg:top-10">
             {/* Image frame */}
             <div 
-              className="relative w-full overflow-hidden rounded-[24px] aspect-[16/10] sm:aspect-video lg:aspect-[1/1.1]"
+              onClick={() => {
+                const projectsSec = document.getElementById("projects");
+                if (projectsSec) {
+                  projectsSec.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+              }}
+              className="relative w-full overflow-hidden rounded-[24px] aspect-[16/10] sm:aspect-video lg:aspect-[1/1.1] cursor-pointer group"
               style={{
                 background: "var(--color-navy)",
               }}
@@ -313,6 +319,7 @@ const Work = () => {
                   <img
                     src={active.preview}
                     alt={active.company}
+                    className="transition-transform duration-750 group-hover:scale-[1.04]"
                     style={{ width: "100%", height: "100%", objectFit: "cover" }}
                   />
                 ) : (
@@ -333,6 +340,16 @@ const Work = () => {
                 position: "absolute", inset: 0,
                 background: "linear-gradient(to top, rgba(15,12,8,0.92) 0%, rgba(15,12,8,0.45) 45%, rgba(15,12,8,0.1) 100%)",
               }} />
+
+              {/* Pulsing Play Overlay on Hover */}
+              <div className="absolute inset-0 flex items-center justify-center bg-black/25 opacity-0 group-hover:opacity-100 transition-opacity duration-350 pointer-events-none">
+                <div 
+                  className="flex items-center justify-center rounded-full bg-[#c9a84c] text-black shadow-[0_0_40px_rgba(201,168,76,0.45)] transform scale-90 group-hover:scale-100 transition-all duration-350"
+                  style={{ width: "68px", height: "68px" }}
+                >
+                  <Play size={26} fill="currentColor" className="ml-1" />
+                </div>
+              </div>
 
               {/* Top-left index badge */}
               <div style={{
@@ -379,7 +396,14 @@ const Work = () => {
                 {/* Project chip */}
                 {active.project && (
                   <div 
-                    className="inline-flex items-center gap-1.5 mb-2 sm:mb-3 lg:mb-4 px-2.5 py-1 rounded"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const projectsSec = document.getElementById("projects");
+                      if (projectsSec) {
+                        projectsSec.scrollIntoView({ behavior: "smooth", block: "start" });
+                      }
+                    }}
+                    className="inline-flex items-center gap-1.5 mb-2 sm:mb-3 lg:mb-4 px-2.5 py-1 rounded cursor-pointer hover:bg-[#c9a84c] hover:text-black hover:border-[#c9a84c] transition-all duration-300"
                     style={{
                       background: "rgba(201,168,76,0.25)",
                       border: "1px solid rgba(201,168,76,0.35)",
@@ -388,7 +412,7 @@ const Work = () => {
                       color: "#e8c96e",
                     }}
                   >
-                    <Play size={9} strokeWidth={2.5} fill="#e8c96e" />
+                    <Play size={9} strokeWidth={2.5} fill="currentColor" />
                     {active.project}
                   </div>
                 )}
