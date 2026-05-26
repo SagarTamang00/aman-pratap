@@ -483,13 +483,13 @@ const Projects = () => {
                                 style={{
                                     fontFamily: 'var(--font-heading, "Bebas Neue", "Impact", sans-serif)',
                                     fontSize: 'clamp(48px, 9vw, 96px)',
-                                    color: '#f5f0e8',
+                                    color: 'var(--color-heading)',
                                 }}
                             >
                                 Behind{' '}
                                 <span
                                     className="text-transparent bg-clip-text"
-                                    style={{ color: "var(--color-accent)", }}
+                                    style={{ color: "var(--color-navy)", }}
                                 >
                                     The Lens
                                 </span>

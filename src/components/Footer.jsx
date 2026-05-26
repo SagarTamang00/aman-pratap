@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaInstagram, FaFacebookF, FaYoutube, FaEnvelope } from "react-icons/fa";
+import { FaInstagram, FaFacebookF, FaYoutube, FaEnvelope, FaTiktok, FaLinkedinIn } from "react-icons/fa";
 
 const Footer = () => {
   return (
@@ -48,16 +48,19 @@ const Footer = () => {
             director@email.com
           </a>
 
-          {/* Social icons */}
           <div className="flex gap-3">
             {[
-              { icon: <FaInstagram size={14} />, href: '#', label: 'Instagram' },
-              { icon: <FaFacebookF size={14} />, href: '#', label: 'Facebook' },
-              { icon: <FaYoutube size={14} />, href: '#', label: 'YouTube' },
+              { icon: <FaInstagram size={14} />, href: 'https://www.instagram.com/aman_pratap_adhikary/', label: 'Instagram' },
+              { icon: <FaFacebookF size={14} />, href: 'https://www.facebook.com/share/1B9zoB4XNP/?mibextid=wwXIfr', label: 'Facebook' },
+              // { icon: <FaYoutube size={14} />, href: 'https://www.youtube.com/@amanpratapadhikary', label: 'YouTube' },
+              { icon: <FaTiktok size={14} />, href: 'https://www.tiktok.com/@dondirector?_r=1&_t=ZS-96g7AjrHiwm', label: 'TikTok' },
+              { icon: <FaLinkedinIn size={14} />, href: 'https://np.linkedin.com/in/aman-pratap-adhikary-b0337435', label: 'LinkedIn' },
             ].map(({ icon, href, label }) => (
               <a
                 key={label}
                 href={href}
+                target="_blank"
+                rel="noopener noreferrer"
                 aria-label={label}
                 className="w-9 h-9 rounded-full bg-[rgba(209,196,175,0.04)] border border-[rgba(201,168,76,0.18)] grid place-items-center text-[rgba(209,196,175,0.5)] hover:text-[#c9a84c] hover:bg-[rgba(201,168,76,0.14)] hover:border-[rgba(201,168,76,0.45)] hover:-translate-y-0.5 transition-all duration-200 no-underline"
               >
