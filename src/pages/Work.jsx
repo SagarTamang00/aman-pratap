@@ -189,6 +189,7 @@ const Work = () => {
   const [transitioning, setTransitioning] = useState(false);
   const sectionRef = useRef(null);
   const listRef = useRef(null);
+  const previewRef = useRef(null);
 
   const active = workData[activeIndex];
   const prev = workData[prevIndex];
@@ -204,13 +205,22 @@ const Work = () => {
     return () => obs.unobserve(node);
   }, []);
 
-  const handleHover = (i) => {
-    if (i === activeIndex) return;
+  const handleSelect = (i, shouldScroll = false) => {
+    if (i === activeIndex) {
+      if (shouldScroll && window.innerWidth < 1024 && previewRef.current) {
+        previewRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      return;
+    }
     setPrevIndex(activeIndex);
     setTransitioning(true);
     setTimeout(() => {
       setActiveIndex(i);
       setTransitioning(false);
+      
+      if (shouldScroll && window.innerWidth < 1024 && previewRef.current) {
+        previewRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
     }, 220);
   };
 
@@ -218,10 +228,8 @@ const Work = () => {
     <section
       ref={sectionRef}
       id="work"
+      className="relative overflow-hidden py-16 px-4 sm:px-6 md:px-8 lg:py-24"
       style={{
-        position: "relative",
-        overflow: "hidden",
-        padding: "80px 24px 100px",
         background: "var(--color-bg-section)",
       }}
     >
@@ -233,20 +241,17 @@ const Work = () => {
         pointerEvents: "none",
       }} />
 
-      <div style={{ position: "relative", zIndex: 10, maxWidth: "1200px", margin: "0 auto" }}>
+      <div className="relative z-10 max-w-6xl mx-auto">
 
         {/* ── Header ── */}
-        <div style={{
-          display: "flex",
-          alignItems: "flex-end",
-          justifyContent: "space-between",
-          flexWrap: "wrap",
-          gap: "20px",
-          marginBottom: "48px",
-          opacity: isVisible ? 1 : 0,
-          transform: isVisible ? "translateY(0)" : "translateY(20px)",
-          transition: "opacity 0.7s ease, transform 0.7s ease",
-        }}>
+        <div 
+          className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 md:mb-16"
+          style={{
+            opacity: isVisible ? 1 : 0,
+            transform: isVisible ? "translateY(0)" : "translateY(20px)",
+            transition: "opacity 0.7s ease, transform 0.7s ease",
+          }}
+        >
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}>
               <Sparkles size={12} color="var(--color-navy)" strokeWidth={1.5} />
@@ -267,19 +272,13 @@ const Work = () => {
             </h2>
           </div>
 
-          <div style={{ display: "flex", gap: "20px", paddingBottom: "4px" }}>
+          <div className="flex gap-4 pb-1 self-start md:self-auto">
             {[
               { val: <Counter target={workData.length} isVisible={isVisible} />, lbl: "Roles" },
               { val: "28+", lbl: "Years" },
             ].map(({ val, lbl }) => (
-              <div key={lbl} style={{
-                display: "flex", flexDirection: "column", alignItems: "center",
-                padding: "14px 24px",
-                borderRadius: "100px",
-                border: "1px solid rgba(79,69,50,0.1)",
-                background: "rgba(255,255,255,0.15)",
-              }}>
-                <span style={{ fontSize: "1.7rem", fontWeight: 900, lineHeight: 1, color: "var(--color-navy)" }}>{val}</span>
+              <div key={lbl} className="flex flex-col items-center py-2 px-5 sm:py-3.5 sm:px-6 rounded-full border border-[rgba(79,69,50,0.1)] bg-[rgba(255,255,255,0.15)]">
+                <span style={{ fontSize: "clamp(1.2rem, 4vw, 1.7rem)", fontWeight: 900, lineHeight: 1, color: "var(--color-navy)" }}>{val}</span>
                 <span style={{ fontSize: "0.62rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.16em", color: "rgba(79,69,50,0.5)", marginTop: "3px" }}>{lbl}</span>
               </div>
             ))}
@@ -287,26 +286,23 @@ const Work = () => {
         </div>
 
         {/* ── Split layout ── */}
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "32px",
-          alignItems: "start",
-          opacity: isVisible ? 1 : 0,
-          transition: "opacity 0.8s ease 0.2s",
-        }}>
+        <div 
+          className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start"
+          style={{
+            opacity: isVisible ? 1 : 0,
+            transition: "opacity 0.8s ease 0.2s",
+          }}
+        >
 
           {/* LEFT — Sticky feature panel */}
-          <div style={{ position: "sticky", top: "40px" }}>
+          <div ref={previewRef} className="lg:sticky lg:top-10">
             {/* Image frame */}
-            <div style={{
-              position: "relative",
-              width: "100%",
-              paddingBottom: "110%",
-              borderRadius: "24px",
-              overflow: "hidden",
-              background: "var(--color-navy)",
-            }}>
+            <div 
+              className="relative w-full overflow-hidden rounded-[24px] aspect-[16/10] sm:aspect-video lg:aspect-[1/1.1]"
+              style={{
+                background: "var(--color-navy)",
+              }}
+            >
               {/* BG image — fades between entries */}
               <div style={{
                 position: "absolute", inset: 0,
@@ -372,25 +368,26 @@ const Work = () => {
               </div>
 
               {/* Bottom content */}
-              <div style={{
-                position: "absolute", bottom: 0, left: 0, right: 0,
-                padding: "32px 28px",
-                opacity: transitioning ? 0 : 1,
-                transform: transitioning ? "translateY(8px)" : "translateY(0)",
-                transition: "opacity 0.22s ease, transform 0.22s ease",
-              }}>
+              <div 
+                className="absolute bottom-0 left-0 right-0 p-5 sm:p-7 lg:p-8"
+                style={{
+                  opacity: transitioning ? 0 : 1,
+                  transform: transitioning ? "translateY(8px)" : "translateY(0)",
+                  transition: "opacity 0.22s ease, transform 0.22s ease",
+                }}
+              >
                 {/* Project chip */}
                 {active.project && (
-                  <div style={{
-                    display: "inline-flex", alignItems: "center", gap: "6px",
-                    marginBottom: "12px",
-                    padding: "4px 11px", borderRadius: "4px",
-                    background: "rgba(201,168,76,0.25)",
-                    border: "1px solid rgba(201,168,76,0.35)",
-                    fontSize: "0.62rem", fontWeight: 800,
-                    textTransform: "uppercase", letterSpacing: "0.12em",
-                    color: "#e8c96e",
-                  }}>
+                  <div 
+                    className="inline-flex items-center gap-1.5 mb-2 sm:mb-3 lg:mb-4 px-2.5 py-1 rounded"
+                    style={{
+                      background: "rgba(201,168,76,0.25)",
+                      border: "1px solid rgba(201,168,76,0.35)",
+                      fontSize: "0.62rem", fontWeight: 800,
+                      textTransform: "uppercase", letterSpacing: "0.12em",
+                      color: "#e8c96e",
+                    }}
+                  >
                     <Play size={9} strokeWidth={2.5} fill="#e8c96e" />
                     {active.project}
                   </div>
@@ -398,7 +395,7 @@ const Work = () => {
 
                 <h3 style={{
                   margin: "0 0 4px 0",
-                  fontSize: "clamp(1.3rem, 2.5vw, 1.9rem)",
+                  fontSize: "clamp(1.2rem, 2.5vw, 1.9rem)",
                   fontWeight: 900, lineHeight: 1.1,
                   letterSpacing: "-0.03em",
                   color: "#fff",
@@ -407,7 +404,7 @@ const Work = () => {
                 </h3>
 
                 <p style={{
-                  margin: "0 0 20px 0",
+                  margin: "0 0 8px 0",
                   fontSize: "0.82rem", fontWeight: 600,
                   color: "rgba(255,255,255,0.55)",
                   textTransform: "uppercase", letterSpacing: "0.08em",
@@ -416,11 +413,9 @@ const Work = () => {
                 </p>
 
                 {/* Date strip */}
-                <div style={{
-                  display: "flex", gap: "20px",
-                  paddingTop: "16px",
-                  borderTop: "1px solid rgba(255,255,255,0.1)",
-                }}>
+                <div 
+                  className="flex flex-wrap gap-x-4 gap-y-2 sm:gap-6 pt-3 sm:pt-4 border-t border-white/10"
+                >
                   {[
                     { lbl: "From", val: active.startDate },
                     { lbl: "Until", val: active.endDate },
@@ -437,7 +432,7 @@ const Work = () => {
           </div>
 
           {/* RIGHT — Scrollable list */}
-          <div ref={listRef} style={{ display: "flex", flexDirection: "column" }}>
+          <div ref={listRef} className="flex flex-col w-full">
             {workData.map((item, i) => {
               const isActive = activeIndex === i;
               const delay = i * 0.035;
@@ -445,10 +440,10 @@ const Work = () => {
               return (
                 <div
                   key={`${item.company}-${i}`}
-                  onMouseEnter={() => handleHover(i)}
+                  onMouseEnter={() => handleSelect(i, false)}
+                  onClick={() => handleSelect(i, true)}
+                  className="relative cursor-pointer group"
                   style={{
-                    position: "relative",
-                    cursor: "default",
                     opacity: isVisible ? 1 : 0,
                     transform: isVisible ? "translateX(0)" : "translateX(20px)",
                     transition: `opacity 0.5s ease ${delay}s, transform 0.5s ease ${delay}s`,
@@ -459,18 +454,15 @@ const Work = () => {
                     <div style={{ height: "1px", background: isActive ? "rgba(201,168,76,0.2)" : "rgba(79,69,50,0.08)", transition: "background 0.3s ease" }} />
                   )}
 
-                  <div style={{
-                    display: "grid",
-                    gridTemplateColumns: "44px 1fr auto",
-                    gap: "0 16px",
-                    alignItems: "center",
-                    padding: "16px 12px",
-                    borderRadius: "12px",
-                    background: isActive
-                      ? "linear-gradient(90deg, rgba(201,168,76,0.08), rgba(201,168,76,0.02))"
-                      : "transparent",
-                    transition: "background 0.35s ease",
-                  }}>
+                  <div 
+                    className="grid grid-cols-[44px_1fr_auto] gap-3 sm:gap-4 items-center p-3.5 sm:p-4 rounded-xl"
+                    style={{
+                      background: isActive
+                        ? "linear-gradient(90deg, rgba(201,168,76,0.08), rgba(201,168,76,0.02))"
+                        : "transparent",
+                      transition: "background 0.35s ease",
+                    }}
+                  >
 
                     {/* Thumbnail */}
                     <div style={{
@@ -497,7 +489,7 @@ const Work = () => {
                     {/* Text */}
                     <div>
                       <div style={{
-                        fontSize: "0.95rem", fontWeight: 800,
+                        fontSize: "clamp(0.85rem, 2.5vw, 0.95rem)", fontWeight: 800,
                         letterSpacing: "-0.02em",
                         color: isActive ? "var(--color-heading)" : "rgba(79,69,50,0.7)",
                         lineHeight: 1.2,
@@ -506,7 +498,7 @@ const Work = () => {
                         {item.role}
                       </div>
                       <div style={{
-                        fontSize: "0.7rem", fontWeight: 600,
+                        fontSize: "clamp(0.62rem, 2vw, 0.7rem)", fontWeight: 600,
                         textTransform: "uppercase", letterSpacing: "0.07em",
                         color: isActive ? "rgba(79,69,50,0.55)" : "rgba(79,69,50,0.35)",
                         marginTop: "2px",

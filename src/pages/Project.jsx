@@ -486,12 +486,12 @@ const Projects = () => {
                                     color: '#f5f0e8',
                                 }}
                             >
-                                The{' '}
+                                Behind{' '}
                                 <span
                                     className="text-transparent bg-clip-text"
                                     style={{ color: "var(--color-accent)", }}
                                 >
-                                    Movies
+                                    The Lens
                                 </span>
                             </h2>
                             <p

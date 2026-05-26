@@ -19,12 +19,46 @@ const Loader = ({ onComplete = noop }) => {
     if (!skip) sessionStorage.setItem('loaderShown', 'true');
   }, [skip]);
 
-  /* Lock body scroll while loader is visible — skip if not showing */
+  /* Lock body and HTML scroll while loader is visible and not gone */
   useEffect(() => {
-    if (skip) return;
+    if (skip || gone) return;
+
+    const originalHtmlOverflow = document.documentElement.style.overflow;
+    const originalHtmlHeight = document.documentElement.style.height;
+    const originalBodyOverflow = document.body.style.overflow;
+    const originalBodyHeight = document.body.style.height;
+
+    document.documentElement.style.overflow = 'hidden';
+    document.documentElement.style.height = '100%';
     document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = ''; };
-  }, [skip]);
+    document.body.style.height = '100%';
+
+    const preventDefault = (e) => {
+      e.preventDefault();
+    };
+
+    const preventKeyScroll = (e) => {
+      const keys = ['Space', 'ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End'];
+      if (keys.includes(e.code) || keys.includes(e.key)) {
+        e.preventDefault();
+      }
+    };
+
+    window.addEventListener('wheel', preventDefault, { passive: false });
+    window.addEventListener('touchmove', preventDefault, { passive: false });
+    window.addEventListener('keydown', preventKeyScroll, { passive: false });
+
+    return () => {
+      document.documentElement.style.overflow = originalHtmlOverflow;
+      document.documentElement.style.height = originalHtmlHeight;
+      document.body.style.overflow = originalBodyOverflow;
+      document.body.style.height = originalBodyHeight;
+
+      window.removeEventListener('wheel', preventDefault);
+      window.removeEventListener('touchmove', preventDefault);
+      window.removeEventListener('keydown', preventKeyScroll);
+    };
+  }, [skip, gone]);
 
   /* Countdown 3 → 2 → 1 → open */
   useEffect(() => {
@@ -42,7 +76,6 @@ const Loader = ({ onComplete = noop }) => {
     if (!opening) return;
 
     const t = setTimeout(() => {
-      document.body.style.overflow = '';
       onCompleteRef.current();
       requestAnimationFrame(() => {
         setGone(true);

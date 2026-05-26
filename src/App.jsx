@@ -13,6 +13,7 @@ import Academic from './pages/Academic'
 import Footer from './components/Footer'
 import News from './pages/News'
 import Contact from './pages/Contact'
+import Gallery from './pages/Gallery'
 
 const Home = () => {
   const [loaderDone, setLoaderDone] = useState(false)
@@ -44,6 +45,7 @@ const App = () => (
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<AboutPage />} />
+        <Route path="/gallery" element={<Gallery />} />
         <Route path="/news" element={<News />} />
         <Route path="/contact" element={<Contact />} />
       </Routes>
