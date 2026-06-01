@@ -3,270 +3,161 @@ import { FaPlay, FaChevronLeft, FaChevronRight, FaTimes } from "react-icons/fa";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCoverflow, Autoplay } from "swiper/modules";
 
-// Import Swiper styles
 import "swiper/css";
 import "swiper/css/effect-coverflow";
 
 const REELS = [
-  {
-    id: 1,
-    title: "Lalibazar",
-    category: "Reels",
-    videoUrl: "https://www.youtube.com/shorts/1aCempu0b30",
-    poster: "https://tridentconcept.com/uploads/lalibazar.jpg"
-  },
-  {
-    id: 2,
-    title: "Bashanta",
-    category: "Reels",
-    videoUrl: "https://www.youtube.com/shorts/BMwxjdRMesU",
-    poster: "https://tridentconcept.com/uploads/bashanta.jpg"
-  },
-  {
-    id: 3,
-    title: "Aktor",
-    category: "Reels",
-    videoUrl: "https://www.youtube.com/shorts/LlQKONeaJqE",
-    poster: "https://tridentconcept.com/uploads/aktor.jpg"
-  },
-  {
-    id: 4,
-    title: "Aankha",
-    category: "Reels",
-    videoUrl: "https://www.youtube.com/shorts/Ev1XMIebLU8",
-    poster: "https://tridentconcept.com/uploads/aankha movie.jpg"
-  },
-  {
-    id: 5,
-    title: "Jante Bakhro",
-    category: "Reels",
-    videoUrl: "https://www.youtube.com/shorts/5oWEaKb-PJc",
-    poster: "https://uat.tridentconcept.com/uploads/Jante-Bakhro-Poster-2-A4-scaled.jpg"
-  },
-  {
-    id: 6,
-    title: "Khusma",
-    category: "Reels",
-    videoUrl: "https://www.youtube.com/shorts/l4S9Ay2kXKw",
-    poster: "https://uat.tridentconcept.com/uploads/khusma.jpg"
-  },
-  {
-    id: 7,
-    title: "Jalaki",
-    category: "Reels",
-    videoUrl: "https://www.youtube.com/shorts/zqAM4LiAV1I",
-    poster: "https://uat.tridentconcept.com/uploads/jalaki-poster-scaled.jpeg"
-  },
-  {
-    id: 8,
-    title: "Zero Degree",
-    category: "Reels",
-    videoUrl: "https://www.youtube.com/shorts/XvQ49ughHWg",
-    poster: "https://uat.tridentconcept.com/uploads/zero-degree-trident-scaled.jpeg"
-  },
-  {
-    id: 9,
-    title: "Kumari",
-    category: "Reels",
-    videoUrl: "https://www.youtube.com/shorts/_21_-RKdmro",
-    poster: "https://uat.tridentconcept.com/uploads/Kumari-Poster-1-30X40-Trident-Concept-2025-1-scaled.jpg"
-  }
+  { id: 1, title: "Lalibazar",    category: "Reels", videoUrl: "https://www.youtube.com/shorts/1aCempu0b30", poster: "https://tridentconcept.com/uploads/lalibazar.jpg" },
+  { id: 2, title: "Bashanta",     category: "Reels", videoUrl: "https://www.youtube.com/shorts/BMwxjdRMesU", poster: "https://tridentconcept.com/uploads/bashanta.jpg" },
+  { id: 3, title: "Aktor",        category: "Reels", videoUrl: "https://www.youtube.com/shorts/LlQKONeaJqE", poster: "https://tridentconcept.com/uploads/aktor.jpg" },
+  { id: 4, title: "Aankha",       category: "Reels", videoUrl: "https://www.youtube.com/shorts/Ev1XMIebLU8", poster: "https://tridentconcept.com/uploads/aankha movie.jpg" },
+  { id: 5, title: "Jante Bakhro", category: "Reels", videoUrl: "https://www.youtube.com/shorts/5oWEaKb-PJc", poster: "https://uat.tridentconcept.com/uploads/Jante-Bakhro-Poster-2-A4-scaled.jpg" },
+  { id: 6, title: "Khusma",       category: "Reels", videoUrl: "https://www.youtube.com/shorts/l4S9Ay2kXKw", poster: "https://uat.tridentconcept.com/uploads/khusma.jpg" },
+  { id: 7, title: "Jalaki",       category: "Reels", videoUrl: "https://www.youtube.com/shorts/zqAM4LiAV1I", poster: "https://uat.tridentconcept.com/uploads/jalaki-poster-scaled.jpeg" },
+  { id: 8, title: "Zero Degree",  category: "Reels", videoUrl: "https://www.youtube.com/shorts/XvQ49ughHWg", poster: "https://uat.tridentconcept.com/uploads/zero-degree-trident-scaled.jpeg" },
+  { id: 9, title: "Kumari",       category: "Reels", videoUrl: "https://www.youtube.com/shorts/_21_-RKdmro", poster: "https://uat.tridentconcept.com/uploads/Kumari-Poster-1-30X40-Trident-Concept-2025-1-scaled.jpg" },
 ];
 
-const isYouTubeUrl = (url) => {
-  return url && (url.includes("youtube.com") || url.includes("youtu.be"));
-};
-
+/* ─── YouTube helpers ──────────────────────────────────────────────────────── */
+const isYouTubeUrl    = (url) => url && (url.includes("youtube.com") || url.includes("youtu.be"));
 const getYouTubeVideoId = (url) => {
   if (!url) return "";
-  let videoId = "";
-  if (url.includes("shorts/")) {
-    videoId = url.split("shorts/")[1]?.split("?")[0]?.split("&")[0];
-  } else if (url.includes("v=")) {
-    videoId = url.split("v=")[1]?.split("&")[0];
-  } else if (url.includes("youtu.be/")) {
-    videoId = url.split("youtu.be/")[1]?.split("?")[0]?.split("&")[0];
-  }
-  return videoId;
+  if (url.includes("shorts/")) return url.split("shorts/")[1]?.split(/[?&]/)[0];
+  if (url.includes("v="))      return url.split("v=")[1]?.split("&")[0];
+  if (url.includes("youtu.be/"))return url.split("youtu.be/")[1]?.split(/[?&]/)[0];
+  return "";
 };
-
 const getYouTubeEmbedUrl = (url) => {
-  const videoId = getYouTubeVideoId(url);
-  return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoId}&modestbranding=1&rel=0&iv_load_policy=3&playsinline=1&enablejsapi=1`;
+  const id = getYouTubeVideoId(url);
+  return `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&controls=0&loop=1&playlist=${id}&modestbranding=1&rel=0&iv_load_policy=3&playsinline=1`;
 };
-
 const getYouTubeModalUrl = (url) => {
-  const videoId = getYouTubeVideoId(url);
-  return `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=1&rel=0&playsinline=1`;
+  const id = getYouTubeVideoId(url);
+  return `https://www.youtube.com/embed/${id}?autoplay=1&controls=1&rel=0&playsinline=1`;
 };
-
-const getYouTubeThumbnail = (url) => {
-  const videoId = getYouTubeVideoId(url);
-  return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-};
-
+const getYouTubeThumbnail = (url) => `https://img.youtube.com/vi/${getYouTubeVideoId(url)}/hqdefault.jpg`;
 const getPosterUrl = (reel) => {
-  if (isYouTubeUrl(reel.videoUrl)) {
-    return getYouTubeThumbnail(reel.videoUrl);
-  }
-  if (reel.poster && !reel.poster.includes("placeholder")) {
-    return reel.poster;
-  }
+  if (isYouTubeUrl(reel.videoUrl)) return getYouTubeThumbnail(reel.videoUrl);
+  if (reel.poster && !reel.poster.includes("placeholder")) return reel.poster;
   return null;
 };
 
+/* ─── useBreakpoint hook ───────────────────────────────────────────────────── */
+const useBreakpoint = () => {
+  const [bp, setBp] = useState("lg");
+  useEffect(() => {
+    const calc = () => {
+      const w = window.innerWidth;
+      if (w < 400)  setBp("xs");
+      else if (w < 640)  setBp("sm");
+      else if (w < 768)  setBp("md");
+      else if (w < 1024) setBp("lg");
+      else               setBp("xl");
+    };
+    calc();
+    window.addEventListener("resize", calc);
+    return () => window.removeEventListener("resize", calc);
+  }, []);
+  return bp;
+};
+
+/* slide dimensions per breakpoint */
+const SLIDE_SIZES = {
+  xs: { w: 130, h: 200 },
+  sm: { w: 155, h: 235 },
+  md: { w: 185, h: 275 },
+  lg: { w: 220, h: 330 },
+  xl: { w: 260, h: 390 },
+};
+
+/* coverflow params per breakpoint */
+const COVERFLOW_PARAMS = {
+  xs: { rotate: 12, depth: 80,  modifier: 1 },
+  sm: { rotate: 15, depth: 110, modifier: 1 },
+  md: { rotate: 18, depth: 140, modifier: 1 },
+  lg: { rotate: 20, depth: 165, modifier: 1 },
+  xl: { rotate: 20, depth: 180, modifier: 1 },
+};
+
+const TRIPLE_REELS = [...REELS, ...REELS, ...REELS];
+
+/* ─── ReelsStudio ──────────────────────────────────────────────────────────── */
 const ReelsStudio = () => {
-  const TRIPLE_REELS = [...REELS, ...REELS, ...REELS];
-  const [activeIndex, setActiveIndex] = useState(13); // Start in the middle of the triple array (index 13 corresponds to Jante Bakhro)
+  const [activeIndex, setActiveIndex]       = useState(13);
   const [activeModalReel, setActiveModalReel] = useState(null);
   const [hoveredReelIndex, setHoveredReelIndex] = useState(null);
   const hoverTimeoutRef = useRef(null);
-  const swiperRef = useRef(null);
+  const swiperRef       = useRef(null);
   const [titles, setTitles] = useState({});
-  const [isMobile, setIsMobile] = useState(false);
+  const bp = useBreakpoint();
+  const isMobile = bp === "xs" || bp === "sm";
 
-  // Check if viewport is mobile sized to enable automatic preview on center slide
+  /* fetch YT titles */
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
-  // Fetch YouTube Shorts / video titles dynamically from oEmbed API and cache them in localStorage
-  useEffect(() => {
-    const cached = localStorage.getItem("yt_reels_titles");
-    let cachedTitles = {};
-    if (cached) {
-      try {
-        cachedTitles = JSON.parse(cached);
-        setTitles(cachedTitles);
-      } catch (e) {
-        console.error("Error parsing cached titles", e);
-      }
-    }
-
+    const cached = (() => {
+      try { return JSON.parse(localStorage.getItem("yt_reels_titles") || "{}"); }
+      catch { return {}; }
+    })();
+    setTitles(cached);
     REELS.forEach((reel) => {
-      if (isYouTubeUrl(reel.videoUrl)) {
-        const videoId = getYouTubeVideoId(reel.videoUrl);
-        if (videoId && !cachedTitles[videoId]) {
-          const fetchUrl = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`;
-          fetch(fetchUrl)
-            .then((res) => res.json())
-            .then((data) => {
-              if (data && data.title) {
-                setTitles((prev) => {
-                  const updated = { ...prev, [videoId]: data.title };
-                  localStorage.setItem("yt_reels_titles", JSON.stringify(updated));
-                  return updated;
-                });
-              }
-            })
-            .catch((err) => console.error(`Error fetching title for ${videoId}:`, err));
-        }
-      }
+      if (!isYouTubeUrl(reel.videoUrl)) return;
+      const id = getYouTubeVideoId(reel.videoUrl);
+      if (!id || cached[id]) return;
+      fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${id}&format=json`)
+        .then((r) => r.json())
+        .then((d) => {
+          if (d?.title) setTitles((p) => {
+            const u = { ...p, [id]: d.title };
+            localStorage.setItem("yt_reels_titles", JSON.stringify(u));
+            return u;
+          });
+        })
+        .catch(() => {});
     });
   }, []);
 
-  // Sync page scroll and autoplay status with modal opening/closing
+  /* lock scroll when modal open */
   useEffect(() => {
-    if (activeModalReel) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-
+    document.body.style.overflow = activeModalReel ? "hidden" : "";
     if (swiperRef.current) {
-      if (activeModalReel) {
-        swiperRef.current.autoplay?.stop();
-      } else {
-        swiperRef.current.autoplay?.start();
-      }
+      activeModalReel ? swiperRef.current.autoplay?.stop() : swiperRef.current.autoplay?.start();
     }
-
-    return () => {
-      document.body.style.overflow = "";
-    };
+    return () => { document.body.style.overflow = ""; };
   }, [activeModalReel]);
 
-  const handlePrev = () => {
-    if (swiperRef.current) {
-      swiperRef.current.slidePrev();
-    }
-  };
-
-  const handleNext = () => {
-    if (swiperRef.current) {
-      swiperRef.current.slideNext();
-    }
-  };
-
-  const handleCardClick = (isActive, reel) => {
-    if (isActive) {
-      setActiveModalReel(reel);
-    }
-  };
-
-  const handleDotClick = (index) => {
-    if (swiperRef.current) {
-      swiperRef.current.slideToLoop(index);
-    }
-  };
-
-  // Video hover preview handlers (mute and play on hover, with a slight delay)
+  const handlePrev = () => swiperRef.current?.slidePrev();
+  const handleNext = () => swiperRef.current?.slideNext();
+  const handleDotClick = (i) => swiperRef.current?.slideToLoop(i);
+  const handleCardClick = (isActive, reel) => { if (isActive) setActiveModalReel(reel); };
   const handleMouseEnter = (index) => {
     if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
-    hoverTimeoutRef.current = setTimeout(() => {
-      setHoveredReelIndex(index);
-    }, 300); // 300ms delay to make scrolling/moving sweep smooth
+    hoverTimeoutRef.current = setTimeout(() => setHoveredReelIndex(index), 300);
   };
-
   const handleMouseLeave = () => {
     if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
     setHoveredReelIndex(null);
   };
 
-  return (
-    <section className="relative w-full py-28 overflow-hidden" style={{ background: "var(--color-bg-section)" }}>
-      {/* Dynamic CSS variables and Swiper overrides for high-fidelity Swiper Coverflow replication */}
-      <style>{`
-        .reels-slider-container {
-          --slide-width: 260px;
-          --slide-height: 380px;
-          --slide-gap: 32px;
-        }
-        @media (max-width: 1024px) {
-          .reels-slider-container {
-            --slide-width: 220px;
-            --slide-height: 320px;
-            --slide-gap: 24px;
-          }
-        }
-        @media (max-width: 768px) {
-          .reels-slider-container {
-            --slide-width: 180px;
-            --slide-height: 260px;
-            --slide-gap: 16px;
-          }
-        }
-        @media (max-width: 480px) {
-          .reels-slider-container {
-            --slide-width: 150px;
-            --slide-height: 220px;
-            --slide-gap: 12px;
-          }
-        }
+  const { w: slideW, h: slideH } = SLIDE_SIZES[bp];
+  const cfParams = COVERFLOW_PARAMS[bp];
 
-        /* Swiper Overrides for 3D Perspective and Looping */
-        .mySwiper {
-          width: 100%;
-          max-width: 1360px;
-          margin: 0 auto;
-          padding: 20px 0 40px;
-        }
-        .mySwiper .swiper-slide {
-          width: var(--slide-width) !important;
-          height: var(--slide-height) !important;
+  /* min-height for the carousel wrapper — slide height + perspective padding */
+  const carouselMinH = slideH + 80;
+
+  return (
+    <section
+      className="relative w-full overflow-hidden"
+      style={{
+        background: "var(--color-bg-section)",
+        paddingTop:    isMobile ? "60px"  : "112px",
+        paddingBottom: isMobile ? "48px"  : "112px",
+      }}
+    >
+      {/* Swiper slide sizing injected as CSS vars so Swiper can read them */}
+      <style>{`
+        .reels-swiper .swiper-slide {
+          width:   ${slideW}px !important;
+          height:  ${slideH}px !important;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -274,97 +165,77 @@ const ReelsStudio = () => {
           filter: grayscale(65%);
           transition: opacity 0.5s ease, filter 0.5s ease, visibility 0.5s ease;
         }
-        .mySwiper .swiper-slide-active {
-          opacity: 1;
-          filter: grayscale(0%);
-        }
-        .mySwiper .swiper-slide-prev,
-        .mySwiper .swiper-slide-next {
-          opacity: 0.75;
-          filter: grayscale(20%);
-        }
+        .reels-swiper .swiper-slide-active       { opacity: 1;    filter: grayscale(0%);  }
+        .reels-swiper .swiper-slide-prev,
+        .reels-swiper .swiper-slide-next         { opacity: 0.75; filter: grayscale(20%); }
 
-        /* Hide slides that are 5 or more positions to the left of the active slide (exactly 4 visible on left) */
-        .mySwiper .swiper-slide:has(~ .swiper-slide + .swiper-slide + .swiper-slide + .swiper-slide + .swiper-slide-active) {
-          opacity: 0 !important;
-          visibility: hidden !important;
-          pointer-events: none !important;
+        /* hide slides ≥5 away from active */
+        .reels-swiper .swiper-slide:has(~ .swiper-slide + .swiper-slide + .swiper-slide + .swiper-slide + .swiper-slide-active) {
+          opacity: 0 !important; visibility: hidden !important; pointer-events: none !important;
         }
-        /* Hide slides that are 5 or more positions to the right of the active slide (exactly 4 visible on right) */
-        .mySwiper .swiper-slide-active + .swiper-slide + .swiper-slide + .swiper-slide + .swiper-slide + .swiper-slide,
-        .mySwiper .swiper-slide-active + .swiper-slide + .swiper-slide + .swiper-slide + .swiper-slide + .swiper-slide ~ .swiper-slide {
-          opacity: 0 !important;
-          visibility: hidden !important;
-          pointer-events: none !important;
+        .reels-swiper .swiper-slide-active + .swiper-slide + .swiper-slide + .swiper-slide + .swiper-slide + .swiper-slide,
+        .reels-swiper .swiper-slide-active + .swiper-slide + .swiper-slide + .swiper-slide + .swiper-slide + .swiper-slide ~ .swiper-slide {
+          opacity: 0 !important; visibility: hidden !important; pointer-events: none !important;
         }
       `}</style>
 
-      {/* Background ambient accents */}
-      <div className="absolute top-1/4 right-0 w-80 h-80 bg-[#c9a84c] opacity-[0.02] blur-[100px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-1/4 left-0 w-80 h-80 bg-[#c9a84c] opacity-[0.02] blur-[100px] rounded-full pointer-events-none" />
+      {/* Ambient glows */}
+      <div className="absolute top-1/4 right-0 w-48 sm:w-64 md:w-80 h-48 sm:h-64 md:h-80 bg-[#c9a84c] opacity-[0.02] blur-[80px] md:blur-[100px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-1/4 left-0  w-48 sm:w-64 md:w-80 h-48 sm:h-64 md:h-80 bg-[#c9a84c] opacity-[0.02] blur-[80px] md:blur-[100px] rounded-full pointer-events-none" />
 
-      <div className="container mx-auto px-6 sm:px-12 lg:px-24">
-        {/* Section Header */}
-        <div className="flex flex-col items-start text-left mb-16">
-
-          <h2 className="text-[clamp(36px,6vw,72px)] font-black uppercase tracking-tight leading-[0.9] text-[var(--color-heading)] mb-4">
+      {/* ── Header ── */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-12 xl:px-24">
+        <div className="flex flex-col items-start text-left mb-8 sm:mb-10 md:mb-14 lg:mb-16">
+          <h2
+            className="font-black uppercase tracking-tight leading-[0.9] text-[var(--color-heading)] mb-2 sm:mb-4"
+            style={{ fontSize: "clamp(28px, 6vw, 72px)" }}
+          >
             Reels{" "}
-            <span className="text-[var(--color-navy)]">
-              Studio
-            </span>
+            <span className="text-[var(--color-navy)]">Studio</span>
           </h2>
-          <p className="text-sm tracking-[0.18em] uppercase text-[var(--color-heading)]/70 font-medium">
+          <p className="text-[10px] sm:text-xs tracking-[0.15em] sm:tracking-[0.18em] uppercase text-[var(--color-heading)]/70 font-medium">
             Dynamic • Cinematic • Impactful Stories
           </p>
         </div>
       </div>
 
-      {/* Swiper Carousel Container (Full-screen width wrapper for perfect symmetric looping) */}
-      <div className="relative w-full flex flex-col items-center reels-slider-container overflow-hidden">
-        <div className="relative w-full py-8 min-h-[280px] sm:min-h-[340px] md:min-h-[420px] lg:min-h-[460px] flex items-center">
+      {/* ── Carousel ── */}
+      <div className="relative w-full flex flex-col items-center overflow-hidden">
+        <div
+          className="relative w-full flex items-center"
+          style={{ minHeight: `${carouselMinH}px`, paddingBlock: "20px" }}
+        >
           <Swiper
-            onSwiper={(swiper) => {
-              swiperRef.current = swiper;
-            }}
-            onSlideChange={(swiper) => {
-              setActiveIndex(swiper.realIndex);
-            }}
+            onSwiper={(s) => { swiperRef.current = s; }}
+            onSlideChange={(s) => setActiveIndex(s.realIndex)}
             initialSlide={13}
-            effect={"coverflow"}
-            grabCursor={true}
-            centeredSlides={true}
-            slidesPerView={"auto"}
-            loop={true}
-            loopAdditionalSlides={4} // Pre-clone 5 extra slides on left/right for perfect screen symmetry
-            slideToClickedSlide={true}
-            autoplay={{
-              delay: 5000,
-              disableOnInteraction: false,
-              pauseOnMouseEnter: true,
-            }}
+            effect="coverflow"
+            grabCursor
+            centeredSlides
+            slidesPerView="auto"
+            loop
+            loopAdditionalSlides={4}
+            slideToClickedSlide
+            autoplay={{ delay: 5000, disableOnInteraction: false, pauseOnMouseEnter: true }}
             coverflowEffect={{
-              rotate: 20,
-              stretch: 0,
-              depth: 180,
-              modifier: 1,
+              rotate:       cfParams.rotate,
+              stretch:      0,
+              depth:        cfParams.depth,
+              modifier:     cfParams.modifier,
               slideShadows: false,
             }}
             modules={[EffectCoverflow, Autoplay]}
-            className="mySwiper !overflow-visible"
+            className="reels-swiper w-full max-w-[1360px] mx-auto !overflow-visible"
           >
             {TRIPLE_REELS.map((reel, index) => {
               const isHovered = hoveredReelIndex === index;
-
               return (
                 <SwiperSlide key={`${reel.id}-${index}`}>
                   {({ isActive }) => {
                     const shouldPlay = isHovered || (isActive && isMobile);
-                    let boxShadow = "0 12px 30px rgba(0,0,0,0.3)";
-                    if (isActive) {
-                      boxShadow = "0 35px 85px rgba(0,0,0,0.78)";
-                    } else {
-                      boxShadow = "0 22px 55px rgba(0,0,0,0.55)";
-                    }
+                    const boxShadow  = isActive
+                      ? "0 35px 85px rgba(0,0,0,0.78)"
+                      : "0 22px 55px rgba(0,0,0,0.55)";
 
                     return (
                       <div
@@ -372,91 +243,73 @@ const ReelsStudio = () => {
                         onMouseEnter={() => handleMouseEnter(index)}
                         onMouseLeave={handleMouseLeave}
                         className="relative w-full h-full cursor-pointer border border-white/10 select-none group"
-                        style={{
-                          borderRadius: "18px",
-                          boxShadow: boxShadow,
-                        }}
+                        style={{ borderRadius: "16px", boxShadow }}
                       >
-                        {/* Media container */}
-                        <div className="absolute inset-0 w-full h-full bg-[#161410] pointer-events-none rounded-[18px] overflow-hidden">
+                        {/* Media */}
+                        <div className="absolute inset-0 bg-[#161410] pointer-events-none overflow-hidden" style={{ borderRadius: "16px" }}>
                           {shouldPlay ? (
                             isYouTubeUrl(reel.videoUrl) ? (
                               <iframe
                                 src={getYouTubeEmbedUrl(reel.videoUrl)}
-                                className="w-full h-full scale-[1.3] transition-opacity duration-500 opacity-100"
+                                className="w-full h-full scale-[1.3] opacity-100"
                                 title={reel.title}
                                 frameBorder="0"
                                 allow="autoplay; encrypted-media"
-                                style={{
-                                  border: "none",
-                                  pointerEvents: "none",
-                                }}
+                                style={{ border: "none", pointerEvents: "none" }}
                               />
                             ) : (
-                              <video
-                                src={reel.videoUrl}
-                                className="w-full h-full object-cover transition-opacity duration-500 opacity-100"
-                                autoPlay
-                                loop
-                                muted
-                                playsInline
-                              />
+                              <video src={reel.videoUrl} className="w-full h-full object-cover" autoPlay loop muted playsInline />
                             )
+                          ) : getPosterUrl(reel) ? (
+                            <img
+                              src={getPosterUrl(reel)}
+                              alt={reel.title}
+                              className="w-full h-full object-cover transition-transform duration-700 ease-out"
+                              style={{ transform: isHovered ? "scale(1.05)" : "scale(1)" }}
+                            />
                           ) : (
-                            getPosterUrl(reel) ? (
-                              <img
-                                src={getPosterUrl(reel)}
-                                alt={reel.title}
-                                className="w-full h-full object-cover transition-transform duration-700 ease-out"
-                                style={{
-                                  transform: isHovered ? "scale(1.05)" : "scale(1)",
-                                }}
-                              />
-                            ) : (
-                              <video
-                                src={`${reel.videoUrl}#t=0.001`}
-                                preload="metadata"
-                                className="w-full h-full object-cover transition-transform duration-700 ease-out"
-                                style={{
-                                  transform: isHovered ? "scale(1.05)" : "scale(1)",
-                                }}
-                              />
-                            )
+                            <video
+                              src={`${reel.videoUrl}#t=0.001`}
+                              preload="metadata"
+                              className="w-full h-full object-cover transition-transform duration-700 ease-out"
+                              style={{ transform: isHovered ? "scale(1.05)" : "scale(1)" }}
+                            />
                           )}
                         </div>
 
-                        {/* Dark gradient overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent pointer-events-none rounded-[18px]" />
+                        {/* Dark gradient */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent pointer-events-none" style={{ borderRadius: "16px" }} />
 
-                        {/* Glowing gold border sweep for active card */}
+                        {/* Active gold border */}
                         {isActive && (
-                          <div className="absolute inset-0 border-[2px] border-[#c9a84c]/50 rounded-[18px] pointer-events-none shadow-[inset_0_0_20px_rgba(201,168,76,0.2)] animate-pulse" />
+                          <div className="absolute inset-0 border-2 border-[#c9a84c]/50 pointer-events-none shadow-[inset_0_0_20px_rgba(201,168,76,0.2)] animate-pulse" style={{ borderRadius: "16px" }} />
                         )}
 
-                        {/* Corner accent decorations for active card */}
+                        {/* Corner accents */}
                         {isActive && (
                           <>
-                            <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-[#c9a84c] rounded-tl-[18px] pointer-events-none" />
-                            <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-[#c9a84c] rounded-br-[18px] pointer-events-none" />
+                            <div className="absolute top-0 left-0 w-5 h-5 border-t-2 border-l-2 border-[#c9a84c] pointer-events-none" style={{ borderTopLeftRadius: "16px" }} />
+                            <div className="absolute bottom-0 right-0 w-5 h-5 border-b-2 border-r-2 border-[#c9a84c] pointer-events-none" style={{ borderBottomRightRadius: "16px" }} />
                           </>
                         )}
 
-                        {/* Play button overlay in middle */}
+                        {/* Play button */}
                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                           <div
-                            className={`w-12 h-12 md:w-16 md:h-16 rounded-full bg-black/45 backdrop-blur-md border border-white/20 flex items-center justify-center transition-all duration-300 ${isActive ? "scale-100 opacity-100" : "scale-75 opacity-0"
-                              } group-hover:bg-[#c9a84c]/20 group-hover:border-[#c9a84c]/40`}
+                            className={`rounded-full bg-black/45 backdrop-blur-md border border-white/20 flex items-center justify-center transition-all duration-300 group-hover:bg-[#c9a84c]/20 group-hover:border-[#c9a84c]/40
+                              ${isActive ? "opacity-100 scale-100" : "opacity-0 scale-75"}
+                              ${isMobile ? "w-9 h-9" : "w-12 h-12 md:w-14 md:h-14"}`}
                           >
-                            <FaPlay className="text-[#c9a84c] text-sm md:text-lg translate-x-0.5" />
+                            <FaPlay className={`text-[#c9a84c] translate-x-0.5 ${isMobile ? "text-[10px]" : "text-sm md:text-base"}`} />
                           </div>
                         </div>
 
-                        {/* Title and Category info overlay at bottom */}
-                        <div className="absolute bottom-0 inset-x-0 p-4 md:p-6 text-left pointer-events-none transition-transform duration-300">
-                          <span className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-[#c9a84c]">
+                        {/* Title overlay */}
+                        <div className="absolute bottom-0 inset-x-0 pointer-events-none" style={{ padding: isMobile ? "10px 10px 12px" : "14px 18px 18px" }}>
+                          <span className="block font-bold uppercase tracking-wider text-[#c9a84c]" style={{ fontSize: isMobile ? "8px" : "10px" }}>
                             {reel.category}
                           </span>
-                          <h3 className="text-xs md:text-sm font-bold text-white uppercase leading-tight mt-1 tracking-wide">
+                          <h3 className="font-bold text-white uppercase leading-tight mt-0.5 tracking-wide truncate" style={{ fontSize: isMobile ? "9px" : "11px" }}>
                             {titles[getYouTubeVideoId(reel.videoUrl)] || reel.title}
                           </h3>
                         </div>
@@ -469,67 +322,84 @@ const ReelsStudio = () => {
           </Swiper>
         </div>
 
-        {/* Glassmorphic Swiper Next/Prev Controls */}
-        <div className="flex items-center gap-6 mt-8 relative z-20">
+        {/* ── Controls ── */}
+        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 md:gap-6 mt-4 sm:mt-6 md:mt-8 px-4 relative z-20">
           <button
             onClick={handlePrev}
-            className="w-12 h-12 rounded-full bg-black/40 border border-white/10 hover:border-[#c9a84c]/40 flex items-center justify-center text-white hover:text-[#c9a84c] hover:bg-[#c9a84c]/10 backdrop-blur-md transition-all duration-300 active:scale-95"
+            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/40 border border-white/10 hover:border-[#c9a84c]/40 flex items-center justify-center text-white hover:text-[#c9a84c] hover:bg-[#c9a84c]/10 backdrop-blur-md transition-all duration-300 active:scale-95 flex-shrink-0"
             aria-label="Previous Reel"
           >
-            <FaChevronLeft className="text-sm" />
+            <FaChevronLeft className="text-xs sm:text-sm" />
           </button>
-          <div className="flex items-center gap-2">
-            {REELS.map((_, index) => (
+
+          {/* Dots — wrap safely on narrow screens */}
+          <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 max-w-[200px] sm:max-w-none">
+            {REELS.map((_, i) => (
               <button
-                key={index}
-                onClick={() => handleDotClick(index)}
-                className={`h-1.5 rounded-full transition-all duration-300 ${index === (activeIndex % REELS.length) ? "w-8 bg-[#c9a84c]" : "w-1.5 bg-[#4f4532]/25"
-                  }`}
-                aria-label={`Go to slide ${index + 1}`}
+                key={i}
+                onClick={() => handleDotClick(i)}
+                className={`h-1.5 rounded-full transition-all duration-300 ${
+                  i === activeIndex % REELS.length
+                    ? "w-6 sm:w-8 bg-[#c9a84c]"
+                    : "w-1.5 bg-[#4f4532]/25"
+                }`}
+                aria-label={`Go to slide ${i + 1}`}
               />
             ))}
           </div>
+
           <button
             onClick={handleNext}
-            className="w-12 h-12 rounded-full bg-black/40 border border-white/10 hover:border-[#c9a84c]/40 flex items-center justify-center text-white hover:text-[#c9a84c] hover:bg-[#c9a84c]/10 backdrop-blur-md transition-all duration-300 active:scale-95"
+            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/40 border border-white/10 hover:border-[#c9a84c]/40 flex items-center justify-center text-white hover:text-[#c9a84c] hover:bg-[#c9a84c]/10 backdrop-blur-md transition-all duration-300 active:scale-95 flex-shrink-0"
             aria-label="Next Reel"
           >
-            <FaChevronRight className="text-sm" />
+            <FaChevronRight className="text-xs sm:text-sm" />
           </button>
         </div>
       </div>
 
-      {/* Cinematic Modal Player */}
+      {/* ── Cinematic Modal ── */}
       {activeModalReel && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          {/* Backdrop with extreme glass blur */}
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
+          {/* Backdrop */}
           <div
-            className="absolute inset-0 bg-black/85 backdrop-blur-[16px] transition-opacity duration-500"
+            className="absolute inset-0 bg-black/85 backdrop-blur-[16px]"
             onClick={() => setActiveModalReel(null)}
           />
 
-          {/* Portrait Container */}
-          <div className="relative w-full max-w-sm aspect-[9/16] bg-[#0c0a08] border border-[#c9a84c]/30 rounded-3xl overflow-hidden z-10 shadow-[0_0_50px_rgba(201,168,76,0.25)] flex flex-col transform animate-in fade-in zoom-in-95 duration-300">
-            {/* Top Bar controls */}
-            <div className="absolute top-4 inset-x-4 flex justify-between items-center z-20">
-              <div className="flex flex-col">
-                <span className="text-[10px] font-bold text-[#c9a84c] uppercase tracking-widest">
+          {/* Portrait card
+              - xs/sm:  nearly full-screen (95vw wide, fill height)
+              - md+:    fixed max-w-sm card centered
+          */}
+          <div
+            className="relative z-10 flex flex-col bg-[#0c0a08] border border-[#c9a84c]/30 rounded-2xl sm:rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(201,168,76,0.25)]"
+            style={{
+              width:     isMobile ? "min(95vw, 360px)" : "min(360px, 90vw)",
+              /* keep a 9/16 portrait aspect ratio but never exceed viewport height */
+              aspectRatio: "9/16",
+              maxHeight: isMobile ? "92dvh" : "88dvh",
+            }}
+          >
+            {/* Top bar */}
+            <div className="absolute top-3 sm:top-4 inset-x-3 sm:inset-x-4 flex justify-between items-center z-20">
+              <div className="flex flex-col min-w-0 pr-2">
+                <span className="text-[9px] sm:text-[10px] font-bold text-[#c9a84c] uppercase tracking-widest">
                   {activeModalReel.category}
                 </span>
-                <span className="text-xs font-bold text-white uppercase tracking-wider max-w-[220px] truncate">
+                <span className="text-[11px] sm:text-xs font-bold text-white uppercase tracking-wider truncate">
                   {titles[getYouTubeVideoId(activeModalReel.videoUrl)] || activeModalReel.title}
                 </span>
               </div>
               <button
                 onClick={() => setActiveModalReel(null)}
-                className="w-8 h-8 rounded-full bg-black/50 border border-white/20 hover:border-[#c9a84c]/50 flex items-center justify-center text-white hover:text-[#c9a84c] backdrop-blur-md transition-colors"
+                className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-black/50 border border-white/20 hover:border-[#c9a84c]/50 flex items-center justify-center text-white hover:text-[#c9a84c] backdrop-blur-md transition-colors"
                 aria-label="Close video player"
               >
-                <FaTimes className="text-xs" />
+                <FaTimes className="text-[10px] sm:text-xs" />
               </button>
             </div>
 
-            {/* Video container */}
+            {/* Video */}
             <div className="flex-1 w-full h-full relative">
               {isYouTubeUrl(activeModalReel.videoUrl) ? (
                 <iframe
@@ -545,10 +415,7 @@ const ReelsStudio = () => {
                 <video
                   src={activeModalReel.videoUrl}
                   className="w-full h-full object-cover"
-                  autoPlay
-                  controls
-                  playsInline
-                  loop
+                  autoPlay controls playsInline loop
                 />
               )}
             </div>
