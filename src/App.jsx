@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import ScrollToTop from './components/ScrollToTop'
 import Loader from './components/Loader'
-import ClientAdSection from './components/ClientAdSection'
+
+import StickyPromo from './components/StickyPromo'
 
 import Hero from './pages/Hero'
 import Work from './pages/Work'
@@ -18,16 +19,18 @@ import Gallery from './pages/Gallery'
 
 const Home = () => {
   const [loaderDone, setLoaderDone] = useState(false)
+  const reelsSectionRef = useRef(null)
 
   return (
     <>
       <Loader onComplete={() => setLoaderDone(true)} />
       <Hero videoSrc="/intro.mp4" canPlay={loaderDone} />
       <Work />
-
       <Project />
-      <ReelsStudio />
-      <ClientAdSection />
+      <div ref={reelsSectionRef}>
+        <ReelsStudio />
+      </div>
+      <StickyPromo reelsSectionRef={reelsSectionRef} />
       <Footer />
     </>
   )
