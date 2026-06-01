@@ -16,7 +16,7 @@ const newsData = [
     id: 2,
     title: "Behind the Scenes with Aman Pratap Adhikary",
     description:
-      "An exclusive look into Aman’s creative filmmaking process, cinematic vision, and storytelling techniques used in modern Nepali cinema.",
+      "An exclusive look into Aman's creative filmmaking process, cinematic vision, and storytelling techniques used in modern Nepali cinema.",
     image:
       "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=1200&auto=format&fit=crop",
     link: "https://example.com/behind-scenes",
@@ -51,15 +51,15 @@ const NewsCard = ({ news, index, showCards }) => {
   const [hovered, setHovered] = useState(false);
 
   return (
-    <a
-      href={news.link}
+    
+      <a href={news.link}
       target="_blank"
       rel="noopener noreferrer"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onTouchStart={() => setHovered(true)}
       onTouchEnd={() => setHovered(false)}
-      className={`group rounded-3xl overflow-hidden transition-all duration-700 hover:-translate-y-3 hover:scale-[1.02] ${
+      className={`group rounded-3xl overflow-hidden hover:-translate-y-3 hover:scale-[1.02] ${
         showCards ? "opacity-100 translate-y-0" : "opacity-0 translate-y-16"
       }`}
       style={{
@@ -68,8 +68,11 @@ const NewsCard = ({ news, index, showCards }) => {
         boxShadow: hovered
           ? "0 12px 24px rgba(0, 0, 0, 0.12)"
           : "0 4px 8px rgba(0, 0, 0, 0.06)",
+        // ✅ Fixed: no shorthand `transition` mixed with `transitionDelay`
+        transitionProperty: "opacity, transform, box-shadow, border-color",
+        transitionDuration: "700ms, 700ms, 300ms, 300ms",
+        transitionTimingFunction: "ease, ease, ease, ease",
         transitionDelay: showCards ? "0ms" : `${index * 200}ms`,
-        transition: "opacity 700ms, transform 700ms, box-shadow 300ms ease, border-color 300ms",
       }}
     >
       {/* Image */}
@@ -153,10 +156,9 @@ const News = () => {
 
         {/* Heading */}
         <div
-          className={`text-center mb-14 transition-all duration-1000 ${showCards
-              ? "opacity-100 translate-y-0"
-              : "opacity-0 translate-y-10"
-            }`}
+          className={`text-center mb-14 transition-all duration-1000 ${
+            showCards ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+          }`}
         >
           <h2
             className="text-4xl md:text-5xl font-bold"
