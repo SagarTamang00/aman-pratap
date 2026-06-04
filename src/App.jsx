@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import ScrollToTop from './components/ScrollToTop'
 import Loader from './components/Loader'
+import ClientAdSection from './components/ClientAdSection'
 
 import StickyPromo from './components/StickyPromo'
 
@@ -27,6 +28,7 @@ const Home = () => {
       <Hero videoSrc="/intro.mp4" canPlay={loaderDone} />
       <Work />
       <Project />
+      <ClientAdSection />
       <div ref={reelsSectionRef}>
         <ReelsStudio />
       </div>
